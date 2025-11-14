@@ -1,0 +1,97 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+
+export default function MissionSection() {
+  const stats = [
+    { number: '100+', label: 'Years Homeopathic\nLineage' },
+    { number: '3', label: 'Clinical Centres &\nPharmacies' },
+    { number: '7', label: 'Decades Of\nHomeopathic' },
+    { number: '60', label: 'years of\nResearch' }
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  };
+
+  return (
+    <div className="min-h-screen bg-white py-8 sm:py-12 lg:py-16 overflow-hidden">
+      <div >
+        <div className="relative">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-30 mb-8 sm:mb-12 lg:mb-16 flex justify-center"
+          >
+            <img
+              src="/millions.png"
+              alt="Our Mission - Millions Healed - With Advanced Homeopathy Over 100 Years"
+              className="w-full lg:max-w-4xl h-auto"
+            />
+          </motion.div>
+
+
+          <div className="relative w-screen bg-[#d4f0e0] min-h-[220px] px-6 sm:px-8 lg:px-16 py-8 flex items-center justify-between">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-wrap gap-8 sm:gap-12 lg:gap-26 flex-1"
+            >
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  className="flex flex-col text-center"
+                >
+                  <h3 className="text-4xl sm:text-5xl lg:text-3xl xl:text-5xl font-bold text-emerald-700 mb-2 leading-none">
+                    {stat.number}
+                  </h3>
+                  <p className="text-gray-700 text-xs sm:text-sm lg:text-base font-medium leading-tight whitespace-pre-line">
+                    {stat.label}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="absolute -top-4 sm:-top-6 lg:-top-8 right-0 w-2/6 sm:w-2/6 lg:w-2/6 xl:w-2/6 z-10"
+            >
+              <img
+                src="/family.png"
+                alt="Happy Family"
+                className="w-full h-auto object-contain"
+              />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, rotate: -15 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 w-28 sm:w-36 lg:w-44 xl:w-52 z-20"
+            >
+              <img
+                src="/flower.png"
+                alt="Flower Decoration"
+                className="w-full h-auto"
+              />
+            </motion.div>
+
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
