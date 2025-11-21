@@ -201,8 +201,7 @@ const YouTubeVideos = () => {
 
   // Replace these with your environment variables
   // In your actual project, use: process.env.REACT_APP_YOUTUBE_API_KEY
-  const API_KEY = 'AIzaSyAlhNiHg9GvY_vzM-FU2M9bcXavmINSVYI';
-  const CHANNEL_ID = 'UCS_jSHExpSe4W2lQtE9nSWQ';
+
 
   useEffect(() => {
     fetchVideos();
