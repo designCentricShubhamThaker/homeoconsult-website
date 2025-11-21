@@ -9,6 +9,7 @@ import DoctorProfile from "./components/DoctorProfile";
 import TreatmentSelector from "./components/TreatmentSelector";
 import BlogListing from "./components/BlogListing";
 import TestimonialDisplay from "./components/Testimonials";
+import YouTubeVideos from "./components/YoutubeVideos";
 
 const Home = () => {
   return (
@@ -21,6 +22,7 @@ const Home = () => {
       <DoctorProfile />
       <TreatmentSelector />
       <TestimonialDisplay />
+      <YouTubeVideos />
       <BlogListing />
     </Layout>
 

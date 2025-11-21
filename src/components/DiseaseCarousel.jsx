@@ -17,7 +17,7 @@ const DiseaseCarousel = () => {
   const containerRef = useRef(null);
 
   // Configuration
-  const API_URL = 'http://localhost:8000/disease-cards';
+  const API_URL = 'https://lacey-flocculable-sherice.ngrok-free.dev/disease-cards';
   const WS_URL = 'ws://localhost:8000/disease-cards/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
@@ -184,6 +184,7 @@ const DiseaseCarousel = () => {
       const response = await fetch(API_URL, {
         method: 'GET',
         headers: {
+          'ngrok-skip-browser-warning': 'true',
           'Content-Type': 'application/json',
         },
       });
@@ -249,7 +250,7 @@ const DiseaseCarousel = () => {
 
   if (cards.length === 0) {
     return (
-      <div className="w-full py-12 bg-gradient-to-br from-emerald-50 to-teal-50">
+      <div className="w-full py-12 bg-linear-to-br from-emerald-50 to-teal-50">
         <div className="mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-[#147140] mb-3">
             Effective Homeopathic Solutions

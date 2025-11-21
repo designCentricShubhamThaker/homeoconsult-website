@@ -82,7 +82,7 @@ export default function HomeopathyClinic() {
   // MOBILE VIEW
   if (isMobile) {
     return (
-      <div className="min-h-screen  bg-gradient-to-br from-gray-50 to-gray-100 overflow-x-hidden">
+      <div className=" bg-linear-to-br from-gray-50 to-gray-100 overflow-x-hidden">
         {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -164,7 +164,7 @@ export default function HomeopathyClinic() {
 
   // DESKTOP VIEW
   return (
-    <div className="pt-20 bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center py-6 px-4">
+    <div className="pt-20 bg-linear-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center py-6 px-4">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

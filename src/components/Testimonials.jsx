@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Stethoscope } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/testimonials';
+const API_BASE_URL = 'https://lacey-flocculable-sherice.ngrok-free.dev/testimonials';
 const WS_URL = 'ws://localhost:8000/testimonials/ws';
 
 export default function TestimonialDisplay() {
@@ -32,7 +31,7 @@ export default function TestimonialDisplay() {
     ws.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
       console.log('WebSocket message:', message);
-      
+
       if (message.type === 'create' || message.type === 'update' || message.type === 'delete') {
         fetchTestimonials();
       }
@@ -50,9 +49,16 @@ export default function TestimonialDisplay() {
 
   const fetchTestimonials = async () => {
     try {
-      const response = await fetch(API_BASE_URL);
+      const response = await fetch(API_BASE_URL, {
+        method: "GET",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+
+        },
+      });
+
       const data = await response.json() || [];
-      
+
       const grouped = data.reduce((acc, testimonial) => {
         const disease = testimonial.disease_name;
         if (!acc[disease]) {
@@ -79,34 +85,28 @@ export default function TestimonialDisplay() {
     if (!currentDisease || currentDisease.testimonials.length === 0) return;
 
     const scrollInterval = setInterval(() => {
-      setCurrentTestimonialIndex((prevIndex) => {
-        const nextIndex = prevIndex + 1;
-        
-        if (nextIndex >= currentDisease.testimonials.length) {
-          setIsTransitioning(true);
-          setTimeout(() => {
-            setCurrentDiseaseIndex((prevDiseaseIndex) => 
-              (prevDiseaseIndex + 1) % diseaseGroups.length
-            );
-            setIsTransitioning(false);
-          }, 500);
-          return 0;
-        }
-        
-        return nextIndex;
-      });
+      const nextTestimonialIndex = currentTestimonialIndex + 2;
+
+      if (nextTestimonialIndex >= currentDisease.testimonials.length) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrentDiseaseIndex((prevDiseaseIndex) =>
+            (prevDiseaseIndex + 1) % diseaseGroups.length
+          );
+          setCurrentTestimonialIndex(0);
+          setIsTransitioning(false);
+        }, 500);
+      } else {
+        setCurrentTestimonialIndex(nextTestimonialIndex);
+      }
     }, 5000);
 
     return () => clearInterval(scrollInterval);
-  }, [diseaseGroups, currentDiseaseIndex]);
-
-  useEffect(() => {
-    setCurrentTestimonialIndex(0);
-  }, [currentDiseaseIndex]);
+  }, [diseaseGroups, currentDiseaseIndex, currentTestimonialIndex]);
 
   if (diseaseGroups.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-teal-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-green-200 via-green-100 to-teal-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-pulse text-green-700 text-xl font-semibold">Loading testimonials...</div>
         </div>
@@ -115,148 +115,144 @@ export default function TestimonialDisplay() {
   }
 
   const currentDisease = diseaseGroups[currentDiseaseIndex];
-  const visibleTestimonials = currentDisease.testimonials.slice(0, Math.min(2, currentTestimonialIndex + 1));
+  const testimonial1 = currentDisease?.testimonials[currentTestimonialIndex];
+  const testimonial2 = currentDisease?.testimonials[currentTestimonialIndex + 1];
 
-  return (
-    <div className=" relative " style={{
+  if (!testimonial1) {
+    return (
+      <div className=" bg-linear-to-br from-green-200 via-green-100 to-teal-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse text-green-700 text-xl font-semibold">Loading testimonials...</div>
+        </div>
+      </div>
+    );
+  }
+
+  const totalPairs = Math.ceil(currentDisease.testimonials.length / 2);
+  const currentPairIndex = Math.floor(currentTestimonialIndex / 2);
+  const hasOnlyOne = !testimonial2;
+
+ return (
+    <div className="min-h-screen relative flex flex-col overflow-hidden" style={{
       backgroundImage: 'url(/green_bg.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat'
     }}>
-      {/* Header */}
-      <div className="py-12 px-8 relative z-10">
-        <h1 className="text-5xl font-bold text-center text-white drop-shadow-lg">
+
+      <div className="py-3 px-4 mt-12 sm:mt-16 lg:mt-20 relative z-10 shrink-0">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-center text-white drop-shadow-lg">
           Eight Decades of <span className="font-light">Proven Care</span>
         </h1>
       </div>
 
-      <div className={`max-w-7xl mx-auto px-8 pb-16 relative z-10 transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          
-          {/* Left Side - Before/After Image */}
-          <div className="relative">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
-              {currentDisease.image ? (
-                <div className="space-y-6">
-                  {/* Single Before/After Image */}
-                  <div className="relative">
-                    <img
-                      src={`data:image/jpeg;base64,${currentDisease.image}`}
-                      alt={currentDisease.disease_name}
-                      className="w-full h-auto rounded-2xl shadow-lg"
-                    />
-                    {/* Disease Name Overlay at Bottom */}
-                    <div className="absolute bottom-4 left-4 bg-green-700/90 text-white px-4 py-2 rounded-lg">
-                      <h2 className="text-lg font-bold">{currentDisease.disease_name}</h2>
+      <div className={`flex-1 flex items-center px-2 sm:px-4 py-4 min-h-0 transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+        <div className="w-full max-w-full sm:max-w-[98%] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 h-full items-stretch">
+
+            {/* Image Card - Responsive Height */}
+            <div className="flex flex-col h-[250px] sm:h-[300px] lg:h-[350px]">
+              <div className="bg-white/85 backdrop-blur-sm rounded-2xl shadow-2xl p-3 flex flex-col h-full">
+                {currentDisease.image ? (
+                  <div className="flex-1 flex flex-col min-h-0">
+                    <div className="relative flex-1 min-h-0">
+                      <img
+                        src={`data:image/jpeg;base64,${currentDisease.image}`}
+                        alt={currentDisease.disease_name}
+                        className="w-full h-full object-cover rounded-xl shadow-lg"
+                      />
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-center h-80 bg-gradient-to-br from-green-100 to-teal-100 rounded-2xl">
+                ) : (
+                  <div className="flex-1 flex items-center justify-center bg-linear-to-br from-green-100 to-teal-100 rounded-xl">
                     <div className="text-center">
-                      <div className="text-7xl mb-4">🏥</div>
-                      <h2 className="text-3xl font-bold text-gray-800">{currentDisease.disease_name}</h2>
+                      <div className="text-5xl mb-2">🏥</div>
+                      <h2 className="text-2xl font-bold text-gray-800">{currentDisease.disease_name}</h2>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* View All link - bottom left */}
-            <div className="mt-6 flex items-center justify-between">
-              <button className="flex items-center gap-2 text-white hover:text-green-900 transition-colors drop-shadow">
-                <span className="text-sm font-medium">View All</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-
-              {/* Pagination dots */}
-              <div className="flex gap-2">
-                {diseaseGroups.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentDiseaseIndex(idx)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      idx === currentDiseaseIndex 
-                        ? 'bg-white w-8' 
-                        : 'bg-white/60 hover:bg-white/80 w-2'
-                    }`}
-                  />
-                ))}
+                )}
               </div>
             </div>
-          </div>
 
-          {/* Right Side - Testimonial Cards */}
-          <div className="space-y-6">
-            {visibleTestimonials.map((testimonial, idx) => (
-              <div
-                key={testimonial.id}
-                className={`bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 transition-all duration-700 ${
-                  idx === visibleTestimonials.length - 1 ? 'scale-100 opacity-100' : 'scale-98 opacity-90'
-                }`}
-                style={{
-                  animation: idx === visibleTestimonials.length - 1 ? 'slideInRight 0.7s ease-out' : 'none'
-                }}
-              >
-                <div className="mb-6">
-                  <div className="text-5xl text-green-300 font-serif leading-none mb-3">"</div>
-                  <p className="text-gray-700 text-base leading-relaxed italic">
-                    {testimonial.brief}
-                  </p>
-                </div>
+            {/* Testimonials Card - Auto Height on Mobile, Fixed on Desktop */}
+            <div className="flex flex-col h-auto lg:h-[350px]">
+              <div className={`grid ${hasOnlyOne ? 'grid-cols-1' : 'grid-cols-1'} ${!hasOnlyOne ? 'sm:grid-cols-2' : ''} gap-3 sm:gap-4 h-full`}>
+                <div
+                  key={`testimonial-${testimonial1.id}-${currentTestimonialIndex}`}
+                  className="bg-white/85 backdrop-blur-sm rounded-2xl shadow-xl p-4 flex flex-col transition-all duration-700 min-h-[280px] lg:h-full"
+                  style={{
+                    animation: 'slideInRight 0.7s ease-out'
+                  }}
+                >
+                  <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                    <div className="mb-2 flex-1 overflow-hidden">
+                      <div className="text-3xl text-green-300 font-serif leading-none mb-1.5">"</div>
+                      <p className="text-gray-700 text-sm leading-relaxed italic line-clamp-8">
+                        {testimonial1.brief}
+                      </p>
+                    </div>
 
-                <div className="pt-6 border-t border-gray-200">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-900 text-lg mb-1">
-                        - {testimonial.patient_name}
+                    <div className="pt-2.5 border-t border-gray-200 mt-auto shrink-0">
+                      <h3 className="font-bold text-gray-900 text-sm mb-0.5 truncate">
+                        - {testimonial1.patient_name}
                       </h3>
-                      <p className="text-sm text-gray-600 italic">
-                        {testimonial.branch}
+                      <p className="text-xs text-gray-600 italic truncate">
+                        {testimonial1.branch}
                       </p>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
 
-            {/* Show placeholder for second card if only one testimonial visible */}
-            {visibleTestimonials.length === 1 && currentDisease.testimonials.length > 1 && (
-              <div className="bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl p-8 h-64 flex items-center justify-center opacity-40">
-                <div className="text-gray-400 text-center">
-                  <div className="text-4xl mb-2">💬</div>
-                  <p className="text-sm">Next testimonial loading...</p>
-                </div>
-              </div>
-            )}
-
-            {/* View All and Pagination */}
-            <div className="flex items-center justify-between pt-4">
-              {/* Pagination dots for testimonials */}
-              <div className="flex gap-2">
-                {currentDisease.testimonials.map((_, idx) => (
+                {testimonial2 && (
                   <div
-                    key={idx}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      idx === currentTestimonialIndex 
-                        ? 'bg-green-700 w-8' 
-                        : 'bg-green-300 w-2'
-                    }`}
-                  />
-                ))}
+                    key={`testimonial-${testimonial2.id}-${currentTestimonialIndex}`}
+                    className="bg-white/85 backdrop-blur-sm rounded-2xl shadow-xl p-4 flex flex-col transition-all duration-700 min-h-[280px] lg:h-full"
+                    style={{
+                      animation: 'slideInRight 0.7s ease-out 0.1s'
+                    }}
+                  >
+                    <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                      <div className="mb-2 flex-1 overflow-hidden">
+                        <div className="text-3xl text-green-300 font-serif leading-none mb-1.5">"</div>
+                        <p className="text-gray-700 text-sm leading-relaxed italic line-clamp-8">
+                          {testimonial2.brief}
+                        </p>
+                      </div>
+
+                      <div className="pt-2.5 border-t border-gray-200 mt-auto shrink-0">
+                        <h3 className="font-bold text-gray-900 text-sm mb-0.5 truncate">
+                          - {testimonial2.patient_name}
+                        </h3>
+                        <p className="text-xs text-gray-600 italic truncate">
+                          {testimonial2.branch}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* View All link - bottom right */}
-              <button className="flex items-center gap-2 text-white hover:text-green-900 transition-colors drop-shadow">
-                <span className="text-sm font-medium">View All</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <div className="mt-3 flex items-center justify-between shrink-0">
+                <div className="flex gap-1.5">
+                  {Array.from({ length: totalPairs }).map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentTestimonialIndex(idx * 2)}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentPairIndex
+                        ? 'bg-green-700 w-6'
+                        : 'bg-green-300 hover:bg-green-400 w-1.5'
+                        }`}
+                    />
+                  ))}
+                </div>
+
+                <button className="flex items-center gap-1.5 text-white hover:text-green-200 transition-colors drop-shadow text-sm font-medium">
+                  <span>View All</span>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -265,13 +261,20 @@ export default function TestimonialDisplay() {
       <style>{`
         @keyframes slideInRight {
           from {
-            transform: translateX(50px);
+            transform: translateX(30px);
             opacity: 0;
           }
           to {
             transform: translateX(0);
             opacity: 1;
           }
+        }
+        
+        .line-clamp-8 {
+          display: -webkit-box;
+          -webkit-line-clamp: 8;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </div>

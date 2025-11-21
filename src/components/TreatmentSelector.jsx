@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Search, X, Check } from 'lucide-react';
-import { HiMiniMapPin } from "react-icons/hi2";
+import { ChevronDown, Search, X, Check, MapPin, Calendar, CreditCard } from 'lucide-react';
 
 const DISEASES = [
   "ACNE", "Adenoids", "ADHD", "Alopecia areata", "Ankylosing Spondilitis",
@@ -27,18 +26,9 @@ export default function TreatmentSelector() {
   const [selectedTerm, setSelectedTerm] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
-  const [showPrimaryDropdown, setShowPrimaryDropdown] = useState(false);
   const [showSecondaryDropdown, setShowSecondaryDropdown] = useState(false);
   const [primarySearch, setPrimarySearch] = useState('');
   const [secondarySearch, setSecondarySearch] = useState('');
-
-  const [expandedSections, setExpandedSections] = useState({
-    primary: false,
-    secondary: false,
-    region: false,
-    term: false,
-    payment: false
-  });
 
   const [availableRegions, setAvailableRegions] = useState([]);
   const [availableTerms, setAvailableTerms] = useState([]);
@@ -63,7 +53,6 @@ export default function TreatmentSelector() {
   useEffect(() => {
     if (primaryDisease && packages.length > 0) {
       const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
-
       if (comprehensivePlan && comprehensivePlan.regions) {
         const matchingRegions = comprehensivePlan.regions.filter(r => r.disease === primaryDisease);
         const regions = [...new Set(matchingRegions.map(r => r.location))];
@@ -79,7 +68,6 @@ export default function TreatmentSelector() {
         const regionData = comprehensivePlan.regions.find(
           r => r.disease === primaryDisease && r.location === selectedRegion
         );
-
         if (regionData) {
           const terms = regionData.duration_months.map((months, idx) => ({
             months,
@@ -107,13 +95,6 @@ export default function TreatmentSelector() {
     }
   };
 
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
-
   const filteredPrimaryDiseases = DISEASES.filter(d =>
     d.toLowerCase().includes(primarySearch.toLowerCase())
   );
@@ -137,309 +118,237 @@ export default function TreatmentSelector() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 py-6 px-4 flex items-center">
+    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 py-4 md:py-6 px-3 md:px-6 flex items-center">
       <div className="mx-auto w-full max-w-7xl">
-        <h1 className="text-2xl md:text-3xl font-bold text-center mb-4">
-          <span className="text-[#207755]">Start Your Treatment</span>{' '}
-          <span className="text-gray-600">Today</span>
-        </h1>
+        <div className="text-center mb-4 md:mb-5">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+            <span className="text-[#207755]">Start Your Treatment</span>{' '}
+            <span className="text-gray-600">Today</span>
+          </h1>
+          <p className="text-gray-600 text-xs md:text-sm mt-1">Choose your personalized treatment plan</p>
+        </div>
 
-        <div className="grid lg:grid-cols-2 gap-4" style={{ height: '80vh' }}>
+        <div className="grid lg:grid-cols-2 gap-4 md:gap-5">
           {/* Left Card - Comprehensive Plan */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 flex flex-col h-full">
-  <div className="bg-gradient-to-r from-[#207755] to-emerald-600 p-3">
-    <h2 className="text-lg font-bold text-white text-center">
-      Comprehensive <span className="font-normal">Plan</span>
-    </h2>
-  </div>
-
-  <div className="p-3 flex-1 flex flex-col">
-    <div className="space-y-2 flex-1 overflow-y-auto">
-      {/* Primary Disease */}
-      <div className="border-b border-gray-100 pb-2">
-        <div
-          className="flex items-center justify-between cursor-pointer py-2 px-2 hover:bg-gray-50 rounded"
-          onClick={() => toggleSection('primary')}
-        >
-          <span className="text-sm font-medium text-[#207755]">Select your Primary Disease</span>
-          <ChevronDown className={`w-4 h-4 text-[#207755] transition-transform ${expandedSections.primary ? 'rotate-180' : ''}`} />
-        </div>
-        {expandedSections.primary && (
-          <div className="relative mt-2">
-            <div
-              className="bg-gray-50 border border-gray-200 rounded-lg p-2 cursor-pointer hover:border-[#207755] transition-all"
-              onClick={() => setShowPrimaryDropdown(!showPrimaryDropdown)}
-            >
-              <span className={primaryDisease ? 'text-gray-800 text-sm' : 'text-gray-400 text-sm'}>
-                {primaryDisease || 'Select primary disease'}
-              </span>
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-emerald-100 flex flex-col h-auto md:max-h-[calc(100vh-12rem)]">
+            <div className="bg-linear-to-r from-[#207755] via-emerald-600 to-teal-600 p-3 md:p-4 relative overflow-hidden shrink-0">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-12 -mb-12"></div>
+              <h2 className="text-lg md:text-xl font-bold text-white text-center relative z-10">
+                Comprehensive Plan
+              </h2>
+              <p className="text-emerald-50 text-center text-xs mt-0.5 relative z-10">Personalized treatment journey</p>
             </div>
-            {showPrimaryDropdown && (
-              <div className="absolute z-20 w-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 max-h-48 overflow-hidden">
-                <div className="p-2 border-b sticky top-0 bg-white">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2 w-3 h-3 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="w-full pl-7 pr-2 py-1 text-xs border border-gray-200 rounded focus:border-[#207755] outline-none"
-                      value={primarySearch}
-                      onChange={(e) => setPrimarySearch(e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
-                </div>
-                <div className="overflow-y-auto max-h-40">
-                  {filteredPrimaryDiseases.map(disease => (
-                    <div
-                      key={disease}
-                      className={`px-2 py-1.5 text-xs hover:bg-emerald-50 cursor-pointer ${primaryDisease === disease ? 'bg-emerald-50 text-[#207755]' : ''}`}
-                      onClick={() => {
-                        setPrimaryDisease(disease);
-                        setShowPrimaryDropdown(false);
-                        setPrimarySearch('');
-                        setSelectedRegion('');
-                        setSelectedTerm('');
-                      }}
-                    >
-                      {disease}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
 
-      {/* Secondary Diseases */}
-      <div className="border-b border-gray-100 pb-2">
-        <div
-          className="flex items-center justify-between cursor-pointer py-2 px-2 hover:bg-gray-50 rounded"
-          onClick={() => toggleSection('secondary')}
-        >
-          <span className="text-sm font-medium text-[#207755]">Select Secondary Disease (s)</span>
-          <ChevronDown className={`w-4 h-4 text-[#207755] transition-transform ${expandedSections.secondary ? 'rotate-180' : ''}`} />
-        </div>
-        {expandedSections.secondary && (
-          <div className="relative mt-2">
-            <div
-              className="bg-gray-50 border border-gray-200 rounded-lg p-2 cursor-pointer hover:border-[#207755] transition-all min-h-[2rem]"
-              onClick={() => setShowSecondaryDropdown(!showSecondaryDropdown)}
-            >
-              {secondaryDiseases.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-1">
-                  {secondaryDiseases.map(disease => (
-                    <span
-                      key={disease}
-                      className="bg-[#207755] text-white px-2 py-0.5 rounded-full text-xs flex items-center gap-1"
-                    >
-                      {disease}
-                      <X
-                        className="w-3 h-3 cursor-pointer hover:bg-emerald-700 rounded-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleSecondaryDisease(disease);
+            <div className="p-3 md:p-4 flex-1">
+              <div className="space-y-2.5">
+                {/* Primary Disease & Additional Conditions - Side by Side on Desktop */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {/* Primary Disease */}
+                  <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2.5 border border-emerald-200">
+                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1.5">
+                      <div className="w-5 h-5 bg-[#207755] rounded-full flex items-center justify-center text-white font-bold text-xs">1</div>
+                      Primary Disease
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={primaryDisease}
+                        onChange={(e) => {
+                          setPrimaryDisease(e.target.value);
+                          setSelectedRegion('');
+                          setSelectedTerm('');
                         }}
-                      />
-                    </span>
-                  ))}
-                </div>
-              )}
-              <span className="text-gray-400 text-xs">
-                {secondaryDiseases.length === 0 ? 'Select additional diseases' : `${secondaryDiseases.length} selected`}
-              </span>
-            </div>
-            {showSecondaryDropdown && (
-              <div className="absolute z-20 w-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 max-h-48 overflow-hidden">
-                <div className="p-2 border-b sticky top-0 bg-white">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2 w-3 h-3 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="w-full pl-7 pr-2 py-1 text-xs border border-gray-200 rounded focus:border-[#207755] outline-none"
-                      value={secondarySearch}
-                      onChange={(e) => setSecondarySearch(e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                        className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755]"
+                      >
+                        <option value="" className="text-gray-400">Select primary condition</option>
+                        {DISEASES.map(disease => (
+                          <option key={disease} value={disease}>{disease}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#207755] pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {/* Secondary Diseases */}
+                  <div className="bg-linear-to-br from-teal-50 to-emerald-50 rounded-lg p-2.5 border border-teal-200">
+                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1.5">
+                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xs">2</div>
+                      Additional Conditions
+                    </label>
+                    <div className="relative">
+                      <div
+                        className="bg-white border border-teal-200 rounded-lg p-2 cursor-pointer hover:border-teal-600 transition-all min-h-[2rem]"
+                        onClick={() => setShowSecondaryDropdown(!showSecondaryDropdown)}
+                      >
+                        {secondaryDiseases.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {secondaryDiseases.map(disease => (
+                              <span
+                                key={disease}
+                                className="bg-linear-to-r from-teal-600 to-emerald-600 text-white px-2 py-0.5 rounded-full text-xs flex items-center gap-1"
+                              >
+                                {disease.length > 12 ? disease.substring(0, 12) + '...' : disease}
+                                <X
+                                  className="w-3 h-3 cursor-pointer hover:bg-white hover:text-teal-600 rounded-full"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleSecondaryDisease(disease);
+                                  }}
+                                />
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs">Optional</span>
+                        )}
+                      </div>
+                      {showSecondaryDropdown && (
+                        <div className="absolute z-20 w-full mt-1 bg-white rounded-lg shadow-2xl border border-teal-200 max-h-48 overflow-hidden">
+                          <div className="p-2 border-b border-teal-100 sticky top-0 bg-white">
+                            <div className="relative">
+                              <Search className="absolute left-2 top-2 w-3 h-3 text-gray-400" />
+                              <input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full pl-7 pr-2 py-1.5 text-xs border border-gray-200 rounded focus:border-teal-600 outline-none"
+                                value={secondarySearch}
+                                onChange={(e) => setSecondarySearch(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                            </div>
+                          </div>
+                          <div className="overflow-y-auto max-h-36">
+                            {filteredSecondaryDiseases.map(disease => (
+                              <div
+                                key={disease}
+                                className="px-3 py-1.5 text-xs hover:bg-teal-50 cursor-pointer flex items-center gap-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleSecondaryDisease(disease);
+                                }}
+                              >
+                                <div className={`w-3 h-3 rounded border flex items-center justify-center ${secondaryDiseases.includes(disease) ? 'bg-teal-600 border-teal-600' : 'border-gray-300'}`}>
+                                  {secondaryDiseases.includes(disease) && <Check className="w-2 h-2 text-white" />}
+                                </div>
+                                {disease}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="overflow-y-auto max-h-40">
-                  {filteredSecondaryDiseases.map(disease => (
-                    <div
-                      key={disease}
-                      className="px-2 py-1.5 text-xs hover:bg-emerald-50 cursor-pointer flex items-center gap-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSecondaryDisease(disease);
-                      }}
-                    >
-                      <div className={`w-3 h-3 rounded border flex items-center justify-center ${secondaryDiseases.includes(disease) ? 'bg-[#207755] border-[#207755]' : 'border-gray-300'}`}>
-                        {secondaryDiseases.includes(disease) && <Check className="w-2 h-2 text-white" />}
-                      </div>
-                      {disease}
+
+                {/* Region & Term - Side by Side on Desktop */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {/* Region Selection */}
+                  <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2.5 border border-emerald-200">
+                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5" />
+                      Region
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedRegion}
+                        onChange={(e) => {
+                          setSelectedRegion(e.target.value);
+                          setSelectedTerm('');
+                        }}
+                        disabled={availableRegions.length === 0}
+                        className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">{availableRegions.length > 0 ? 'Select region' : (primaryDisease ? 'None available' : 'Select disease first')}</option>
+                        {availableRegions.map(region => (
+                          <option key={region} value={region}>{region}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#207755] pointer-events-none" />
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Term Selection */}
+                  <div className="bg-linear-to-br from-teal-50 to-emerald-50 rounded-lg p-2.5 border border-teal-200">
+                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5" />
+                      Duration
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedTerm}
+                        onChange={(e) => setSelectedTerm(e.target.value)}
+                        disabled={availableTerms.length === 0}
+                        className="w-full bg-white border border-teal-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-teal-600 transition-all appearance-none focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">{availableTerms.length > 0 ? 'Select duration' : (selectedRegion ? 'None available' : 'Select region first')}</option>
+                        {availableTerms.map(term => (
+                          <option key={term.months} value={term.months}>
+                            {term.months} months - {term.currency} {term.price}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-teal-600 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Method */}
+                <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2.5 border border-emerald-200">
+                  <label className="text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1">
+                    <CreditCard className="w-3.5 h-3.5" />
+                    Payment
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755]"
+                    >
+                      <option value="">Select payment method</option>
+                      <option value="Credit Card">Credit Card</option>
+                      <option value="Debit Card">Debit Card</option>
+                      <option value="UPI">UPI</option>
+                      <option value="Net Banking">Net Banking</option>
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#207755] pointer-events-none" />
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        )}
-      </div>
+            </div>
 
-      {/* Region Selection */}
-      <div className="border-b border-gray-100 pb-2">
-        <div
-          className="flex items-center justify-between cursor-pointer py-2 px-2 hover:bg-gray-50 rounded"
-          onClick={() => toggleSection('region')}
-        >
-          <span className="text-sm font-medium text-[#207755]">Select Country/ Region:</span>
-          <ChevronDown className={`w-4 h-4 text-[#207755] transition-transform ${expandedSections.region ? 'rotate-180' : ''}`} />
-        </div>
-        {expandedSections.region && (
-          <div className="mt-2 bg-gray-50 rounded-lg p-2 border border-gray-200 max-h-32 overflow-y-auto">
-            {availableRegions.length > 0 ? (
-              availableRegions.map(region => (
-                <label
-                  key={region}
-                  className="flex items-center gap-2 py-1 hover:bg-white rounded cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedRegion === region}
-                    onChange={() => {
-                      setSelectedRegion(region);
-                      setSelectedTerm('');
-                    }}
-                    className="w-3 h-3 text-[#207755] rounded border-gray-300 focus:ring-[#207755]"
-                  />
-                  <span className="text-xs text-gray-700">{region}</span>
-                </label>
-              ))
-            ) : (
-              <p className="text-gray-400 text-xs text-center py-2">
-                {primaryDisease ? 'No regions available' : 'Select a primary disease first'}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Term Selection */}
-      <div className="border-b border-gray-100 pb-2">
-        <div
-          className="flex items-center justify-between cursor-pointer py-2 px-2 hover:bg-gray-50 rounded"
-          onClick={() => toggleSection('term')}
-        >
-          <span className="text-sm font-medium text-[#207755]">Select A Term:</span>
-          <ChevronDown className={`w-4 h-4 text-[#207755] transition-transform ${expandedSections.term ? 'rotate-180' : ''}`} />
-        </div>
-        {expandedSections.term && (
-          <div className="mt-2 bg-gray-50 rounded-lg p-2 border border-gray-200">
-            {availableTerms.length > 0 ? (
-              availableTerms.map(term => (
-                <label
-                  key={term.months}
-                  className="flex items-center justify-between py-1.5 px-2 hover:bg-white rounded cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="term"
-                      value={term.months}
-                      checked={selectedTerm === term.months.toString()}
-                      onChange={(e) => setSelectedTerm(e.target.value)}
-                      className="w-3 h-3 text-[#207755]"
-                    />
-                    <span className="text-xs text-gray-700">{term.months} months</span>
-                  </div>
-                  <span className="text-[#207755] font-semibold text-xs">{term.currency} {term.price}</span>
-                </label>
-              ))
-            ) : (
-              <p className="text-gray-400 text-xs text-center py-2">
-                {selectedRegion ? 'No terms available' : 'Select a region first'}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Payment Method */}
-      <div className="pb-2">
-        <div
-          className="flex items-center justify-between cursor-pointer py-2 px-2 hover:bg-gray-50 rounded"
-          onClick={() => toggleSection('payment')}
-        >
-          <span className="text-sm font-medium text-[#207755]">Payment Methods:</span>
-          <ChevronDown className={`w-4 h-4 text-[#207755] transition-transform ${expandedSections.payment ? 'rotate-180' : ''}`} />
-        </div>
-        {expandedSections.payment && (
-          <div className="mt-2 bg-gray-50 rounded-lg p-2 border border-gray-200">
-            {['Credit Card', 'Debit Card', 'UPI', 'Net Banking'].map(method => (
-              <label
-                key={method}
-                className="flex items-center gap-2 py-1 hover:bg-white rounded cursor-pointer"
+            <div className="p-3 md:p-4 border-t border-gray-100 shrink-0">
+              <button
+                className="w-full bg-linear-to-r from-[#207755] via-emerald-600 to-teal-600 hover:from-emerald-700 hover:via-teal-700 hover:to-[#207755] text-white font-bold py-2.5 md:py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-xs md:text-sm"
+                onClick={handleStartTreatment}
               >
-                <input
-                  type="radio"
-                  name="payment"
-                  value={method}
-                  checked={paymentMethod === method}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-3 h-3 text-[#207755]"
-                />
-                <span className="text-xs text-gray-700">{method}</span>
-              </label>
-            ))}
+                Start Your Treatment Journey
+              </button>
+            </div>
           </div>
-        )}
-      </div>
-    </div>
 
-    <div className="pt-3 mt-auto">
-      <button
-        className="w-full bg-gradient-to-r from-[#207755] to-emerald-600 hover:from-emerald-700 hover:to-[#207755] text-white font-semibold py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-sm"
-        onClick={handleStartTreatment}
-      >
-        Start Treatment
-      </button>
-    </div>
-  </div>
-</div>
-
-
-          <div className="relative bg-[#E8E8E8] rounded-lg shadow-lg overflow-hidden border border-gray-100 h-full flex flex-col">
-            {/* Map Image */}
+          <div className="relative bg-[#E8E8E8] rounded-2xl shadow-xl overflow-hidden border border-gray-100 min-h-[400px] md:h-[calc(100vh-12rem)] flex flex-col">
             <img
               src="/map.jpg"
               alt="World Map"
               className="w-full h-full object-cover"
             />
 
-            {/* Top Overlay - Heading & Paragraph */}
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center px-4">
               <h2 className="text-black text-lg md:text-xl font-bold">
                 <span className="font-bold">Personal</span>{' '}
                 <span className="font-normal">Consultations</span>
               </h2>
-
               <p className="text-black text-xs md:text-sm mt-1 whitespace-nowrap">
                 Looking for expert care in your vicinity? Look no further.
               </p>
-
             </div>
 
-            {/* Bottom Overlay - Button */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 w-full flex justify-center">
               <button className="bg-[#207755] hover:bg-emerald-700 text-white font-semibold py-2.5 md:py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-sm">
                 Book an Appointment
               </button>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>

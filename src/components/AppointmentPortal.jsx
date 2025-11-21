@@ -201,14 +201,14 @@ const AppointmentPortal = () => {
 
   if (currentPage === 'home') {
     return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-cyan-50 overflow-hidden">
+      <div className="h-screen flex items-center justify-center bg-linear-to-br from-teal-50 via-white to-cyan-50 overflow-hidden">
         <div className=" px-8 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-600 rounded-full mb-8">
             <Stethoscope className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-7xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
             Book Your<br/>
-            <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">Appointment</span>
+            <span className="bg-linear-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">Appointment</span>
           </h1>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
             Schedule your consultation with expert doctors across Bandra, Malad, and international locations
@@ -227,7 +227,7 @@ const AppointmentPortal = () => {
 
   if (currentPage === 'booking') {
     return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-cyan-50 overflow-hidden p-6">
+      <div className="h-screen flex items-center justify-center bg-linear-to-br from-teal-50 via-white to-cyan-50 overflow-hidden p-6">
         <div className=" w-full">
           <Breadcrumb 
             items={[
@@ -381,7 +381,7 @@ const AppointmentPortal = () => {
               
               <button
                 type="submit"
-                className="w-full mt-6 px-6 py-4 bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+                className="w-full mt-6 px-6 py-4 bg-linear-to-r from-teal-600 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
               >
                 Book Appointment
               </button>
@@ -393,7 +393,7 @@ const AppointmentPortal = () => {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-white to-cyan-50 overflow-hidden p-6">
+    <div className="h-screen flex items-center justify-center bg-linear-to-br from-teal-50 via-white to-cyan-50 overflow-hidden p-6">
       <div className="max-w-2xl w-full">
         <Breadcrumb 
           items={[
@@ -404,7 +404,7 @@ const AppointmentPortal = () => {
         />
 
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-400 to-cyan-600 rounded-full mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-teal-400 to-cyan-600 rounded-full mb-6 shadow-lg">
             <CheckCircle className="w-10 h-10 text-white" />
           </div>
           

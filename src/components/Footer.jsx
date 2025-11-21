@@ -4,90 +4,174 @@ import { Facebook, Instagram, Linkedin } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="bg-[#207755] text-white">
-      <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
-          <div className="col-span-1 sm:col-span-2 lg:col-span-1 flex flex-col items-start justify-start">
+        {/* MOBILE LAYOUT */}
+        <div className="lg:hidden">
+          {/* Logo + Social Icons */}
+          <div className="flex items-center justify-between mb-6">
+            <img
+              src="/homeo_consult_logo.jpg"
+              alt="Homeo Consult Logo"
+              className="h-10 w-auto object-contain"
+            />
+            <div className="flex gap-3">
+              <Instagram size={18} />
+              <Facebook size={18} />
+              <Linkedin size={18} />
+            </div>
+          </div>
+
+          {/* Locations Grid - 2 columns, equal height boxes */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {/* Bandra */}
+            <div className="bg-[#1a6548] p-3 rounded min-h-[100px] flex flex-col">
+              <h3 className="font-bold text-xs mb-2">Bandra</h3>
+              <p className="text-[10px]  leading-relaxed grow">
+                Jain Chambers<br />
+                SV Road<br />
+                Bandra (W)<br />
+                Mumbai 400050
+              </p>
+              <p className="text-[10px] font-semibold mt-2">+91 9820190203</p>
+            </div>
+
+            {/* Malad */}
+            <div className="bg-[#1a6548] p-3 rounded min-h-[100px] flex flex-col">
+              <h3 className="font-bold text-xs mb-2">Malad</h3>
+              <p className="text-[10px]  leading-relaxed grow">
+                SV Road<br />
+                Malad (W)<br />
+                Mumbai 400064
+              </p>
+              <p className="text-[10px] font-semibold mt-2">+91 9820190203</p>
+            </div>
+
+            {/* USA/Canada */}
+            <div className="bg-[#1a6548] p-3 rounded min-h-[100px] flex flex-col">
+              <h3 className="font-bold text-xs mb-2">USA/Canada</h3>
+              <p className="text-[10px]  leading-relaxed grow">
+                163 Tenace Ave<br />
+                LU, Canada<br />
+                <br />
+                usa@homeoconsult.com
+              </p>
+              <p className="text-[10px] font-semibold mt-2">+1 647-440-3875</p>
+            </div>
+
+            {/* Resources */}
+            <div className="bg-[#1a6548] p-3 rounded min-h-[100px] flex flex-col">
+              <h3 className="font-bold text-xs mb-2">Resources</h3>
+              <ul className="text-[10px]  leading-relaxed space-y-1 grow">
+                <li>Doctor Section</li>
+                <li>Health Talks</li>
+                <li>Blogs</li>
+                <li>Brochure</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Razorpay */}
+          <div className="text-center">
+            <p className="text-xs ">Razorpay</p>
+          </div>
+        </div>
+
+        {/* DESKTOP original layout preserved completely */}
+        <div className="hidden lg:grid grid-cols-5 gap-8">
+
+          <div className="col-span-1 flex flex-col items-start justify-start">
             <img
               src="/homeo_consult_logo.jpg"
               alt="Homeo Consult Logo"
               className="h-15 w-auto object-contain"
             />
-
-
-            <div>
-              <p className='font-medium mt-2 '>Follow Us</p>
-              <div className="flex gap-3 mb-4 mt-2">
-                <a href="#" className="text-white hover:text-green-200 transition"><Instagram size={18} /></a>
-                <a href="#" className="text-white hover:text-green-200 transition"><Facebook size={18} /></a>
-                <a href="#" className="text-white hover:text-green-200 transition"><Linkedin size={18} /></a>
-              </div>
-              <div className="text-xs text-green-100"> Razorpay</div>
+            <p className='font-medium mt-2'>Follow Us</p>
+            <div className="flex gap-3 mb-4 mt-2">
+              <Instagram size={18} />
+              <Facebook size={18} />
+              <Linkedin size={18} />
             </div>
-
-
+            <div className="text-xs ">Razorpay</div>
           </div>
+
           <div className="col-span-1">
-            <h3 className="font-bold text-sm lg:text-base mb-3">Resources</h3>
-            <ul className="space-y-2 text-xs lg:text-sm text-green-100">
-              <li><a href="#" className="hover:text-white transition">Doctor Section</a></li>
-              <li><a href="#" className="hover:text-white transition">Upcoming Health Talks</a></li>
-              <li><a href="#" className="hover:text-white transition">Blogs</a></li>
-              <li><a href="#" className="hover:text-white transition">Download Brochure</a></li>
+            <h3 className="font-bold text-base mb-3">Resources</h3>
+            <ul className="space-y-2 text-sm text-green-100">
+              <li>Doctor Section</li>
+              <li>Upcoming Health Talks</li>
+              <li>Blogs</li>
+              <li>Download Brochure</li>
             </ul>
           </div>
 
           <div className="col-span-1">
-            <h3 className="font-bold text-sm lg:text-base mb-3">Bandra</h3>
-            <p className="text-xs lg:text-sm text-green-100 mb-3">
-              HomeOconsult R&D<br />
-              <span className="text-xs">(Opp Dr Vaidyaraj)</span><br />
-              Jain Chambers, SV Road,<br />
-              Bandra (W), Mumbai 400050, India
+            <h3 className="font-bold text-base mb-3">Bandra</h3>
+            <p className="text-sm text-green-100 mb-3">
+              HomeOconsult R&D <br />
+              (Opp Dr Vaidyaraj) <br />
+              Jain Chambers, SV Road, <br />
+              Bandra (W), Mumbai 400050
             </p>
-            <p className="text-xs lg:text-sm text-green-100 font-semibold">
-              Call Us: <a href="tel:+919820190203" className="hover:text-white transition">+91 9820190203</a>
+            <p className="text-sm text-green-100 font-semibold">
+              Call Us: +91 9820190203
             </p>
           </div>
+
           <div className="col-span-1">
-            <h3 className="font-bold text-sm lg:text-base mb-3">Malad</h3>
-            <p className="text-xs lg:text-sm text-green-100 mb-3">
-              HomeOconsult R&D<br />
-              SV Road, Malad (W),<br />
-              Mumbai - 400064, India
+            <h3 className="font-bold text-base mb-3">Malad</h3>
+            <p className="text-sm text-green-100 mb-3">
+              HomeOconsult R&D <br />
+              SV Road, Malad (W), <br />
+              Mumbai - 400064
             </p>
-            <p className="text-xs lg:text-sm text-green-100 font-semibold">
-              Call Us: <a href="tel:+919820190203" className="hover:text-white transition">+91 9820190203</a>
+            <p className="text-sm font-semibold text-green-100">
+              Call Us: +91 9820190203
             </p>
           </div>
-          <div className="col-span-1 sm:col-span-2 lg:col-span-1">
-            <h3 className="font-bold text-sm lg:text-base mb-3">USA/Canada</h3>
-            <p className="text-xs lg:text-sm text-green-100 mb-3">
-              163 Tenace Ave,<br />
+
+          <div className="col-span-1">
+            <h3 className="font-bold text-base mb-3">USA/Canada</h3>
+            <p className="text-sm text-green-100 mb-3">
+              163 Tenace Ave, <br />
               LU, Canada
             </p>
-            <div className="space-y-1 text-xs lg:text-sm text-green-100">
-              <p><a href="mailto:usa@homeoconsult.com" className="hover:text-white transition">usa@homeoconsult.com</a></p>
-              <p>Tel: <a href="tel:+1647440-3875" className="hover:text-white transition">+1 647-440-3875</a></p>
-              <p><a href="mailto:ask@homeoconsult.com" className="hover:text-white transition">ask@homeoconsult.com</a></p>
-              <p>Ph: <a href="tel:+919820190203" className="hover:text-white transition">+91 9820190203</a></p>
+            <p className="text-sm text-green-100">usa@homeoconsult.com</p>
+            <p className="text-sm text-green-100">+1 647-440-3875</p>
+            <p className="text-sm text-green-100">ask@homeoconsult.com</p>
+            <p className="text-sm text-green-100">+91 9820190203</p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* BOTTOM BAR */}
+      <div className="bg-[#1c6a4c] py-3 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+
+          {/* MOBILE */}
+          <div className="flex flex-col items-center text-center gap-2 text-[11px] text-green-100 sm:hidden">
+            <p>© 2025 HomeOconsult R&D. All rights reserved.</p>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-white transition">Disclaimer</a>
+              <a href="#" className="hover:text-white transition">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition">Cookies Policy</a>
             </div>
           </div>
+
+          {/* DESKTOP */}
+          <div className="hidden sm:flex items-center justify-between text-xs text-green-100">
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-white transition">Disclaimer</a>
+              <a href="#" className="hover:text-white transition">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition">Cookies Policy</a>
+            </div>
+            <p>© 2025 HomeOconsult R&D. All rights reserved.</p>
+          </div>
+
         </div>
       </div>
 
-      <div className="bg-[#207755] py-3 px-4 sm:px-6 lg:px-8">
-        <div className=" mx-auto flex flex-col sm:flex-row items-center justify-between text-xs lg:text-sm text-green-100 gap-3">
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 order-2 sm:order-1">
-            <a href="#" className="hover:text-white transition">Disclaimer</a>
-            <span className="hidden sm:inline">|</span>
-            <a href="#" className="hover:text-white transition">Privacy Policy</a>
-            <span className="hidden sm:inline">|</span>
-            <a href="#" className="hover:text-white transition">Cookies Policy</a>
-          </div>
-          <p className="order-1 sm:order-2">© Copyright 2025. HomeOconsult R&D. All rights reserved.</p>
-        </div>
-      </div>
     </footer>
   );
 }

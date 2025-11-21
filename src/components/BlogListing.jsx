@@ -12,8 +12,8 @@ export default function BlogListing() {
   const pollingIntervalRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
 
-  // Configuration
-  const API_URL = 'http://localhost:8000/blogs';
+
+  const API_URL = 'https://lacey-flocculable-sherice.ngrok-free.dev/blogs';
   const WS_URL = 'ws://localhost:8000/blogs/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
@@ -130,6 +130,7 @@ export default function BlogListing() {
       const response = await fetch(API_URL, {
         method: 'GET',
         headers: {
+          'ngrok-skip-browser-warning': 'true',
           'Content-Type': 'application/json',
         },
       });
@@ -169,10 +170,10 @@ export default function BlogListing() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
@@ -189,8 +190,8 @@ export default function BlogListing() {
       <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold text-center mb-12">
-            <span className="text-green-600">Latest</span>{' '}
-            <span className="text-gray-800">Blogs</span>
+            <span className="text-[#207755]">Latest</span>{' '}
+            <span className="text-[#207755] font-normal">Blogs</span>
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {[1, 2, 3].map((i) => (
@@ -216,7 +217,7 @@ export default function BlogListing() {
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <p className="text-red-600 font-semibold mb-2">Error loading blogs</p>
             <p className="text-red-500 text-sm">{error}</p>
-            <button 
+            <button
               onClick={fetchBlogs}
               className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
@@ -229,17 +230,16 @@ export default function BlogListing() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header with Connection Status */}
-        <div className="flex flex-col items-center mb-12">
+    <div className=" bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className=" mx-auto">
+        <div className="flex flex-col items-center mb-5">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-4">
-            <span className="text-green-600">Latest</span>{' '}
-            <span className="text-gray-800">Blogs</span>
+            <span className="text-[#207755]">Latest</span>{' '}
+            <span className="text-[#207755] font-normal">Blogs</span>
           </h1>
-          
+
           {/* Connection Status Badge */}
-      
+
         </div>
 
         {/* Blog Grid */}
@@ -250,14 +250,14 @@ export default function BlogListing() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {blogs.map((blog) => (
-              <div 
+              <div
                 key={blog.id}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
               >
                 {/* Blog Image */}
                 <div className="relative w-full h-56 overflow-hidden bg-gray-200">
                   {blog.image ? (
-                    <img 
+                    <img
                       src={`data:image/jpeg;base64,${blog.image}`}
                       alt={blog.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
@@ -267,7 +267,7 @@ export default function BlogListing() {
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-green-50">
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-green-100 to-green-50">
                       <span className="text-green-600 text-4xl font-bold">
                         {blog.title.charAt(0)}
                       </span>
@@ -276,12 +276,12 @@ export default function BlogListing() {
                 </div>
 
                 {/* Blog Content */}
-                <div className="p-6 flex flex-col flex-grow">
+                <div className="p-6 flex flex-col grow">
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 line-clamp-2 hover:text-green-600 transition-colors cursor-pointer">
                     {blog.title}
                   </h2>
-                  
-                  <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-3 flex-grow">
+
+                  <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-3 grow">
                     {blog.description}
                   </p>
 
@@ -297,7 +297,7 @@ export default function BlogListing() {
                         <span>0</span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-1 text-green-600 font-medium">
                       <Clock size={14} />
                       <span>{calculateReadTime(blog.description)} Min Read</span>
