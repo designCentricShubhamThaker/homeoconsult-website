@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
