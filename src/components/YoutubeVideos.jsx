@@ -8,6 +8,8 @@ const YouTubeVideos = () => {
 
   const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
   const CHANNEL_ID = import.meta.env.VITE_YOUTUBE_CHANNEL_ID
+  // const API_KEY = "AIzaSyA4RojSosCVH5bjhN_z2Kj7QTRk0fwhVNk"
+  // const CHANNEL_ID = "UCak5ufZMSsLqyA5fTq3LBEQ"
 
   console.log('Using API Key:', API_KEY);
   console.log('Using Channel ID:', CHANNEL_ID);
