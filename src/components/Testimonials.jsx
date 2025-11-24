@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const API_BASE_URL = 'https://lacey-flocculable-sherice.ngrok-free.dev/testimonials';
-const WS_URL = 'ws://localhost:8000/testimonials/ws';
+const WS_URL = 'wss://lacey-flocculable-sherice.ngrok-free.dev/testimonials/ws';
 
 export default function TestimonialDisplay() {
   const [diseaseGroups, setDiseaseGroups] = useState([]);

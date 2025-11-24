@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Menu, X, Phone, LogIn, ChevronDown } from "lucide-react";
 import { motion, useScroll, AnimatePresence } from "framer-motion";
@@ -62,19 +61,17 @@ export default function Header() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
 
-  const { scrollY } = useScroll();
-
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Detect scroll direction
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setScrollDirection("down");
       } else {
         setScrollDirection("up");
       }
-      
+
       // Check if scrolled past threshold
       setIsScrolled(currentScrollY > 20);
       setLastScrollY(currentScrollY);
@@ -178,7 +175,7 @@ export default function Header() {
 
             {/* Navigation Links */}
             <nav className="flex items-center space-x-6">
-              {navLinks.map((link, index) => (
+              {navLinks.slice(0, 2).map((link, index) => (
                 <motion.a
                   key={link.name}
                   href={link.path}
@@ -198,8 +195,8 @@ export default function Header() {
                 </motion.a>
               ))}
 
-              {/* Ailments Dropdown */}
-              <div className="relative">
+  
+              <div className="relative ml-auto">
                 <motion.button
                   className="flex items-center text-gray-700 hover:text-green-700 text-sm font-medium transition-colors"
                   onMouseEnter={() => setIsAilmentsOpen(true)}
@@ -216,34 +213,56 @@ export default function Header() {
 
                 <AnimatePresence>
                   {isAilmentsOpen && (
-                    <motion.div
-                      className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border max-h-96 overflow-y-auto z-50"
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      onMouseEnter={() => setIsAilmentsOpen(true)}
-                      onMouseLeave={() => setIsAilmentsOpen(false)}
-                    >
-                      <div className="p-2">
-                        {DISEASES.map((disease, index) => (
-                          <motion.button
-                            key={disease}
-                            onClick={() => handleDiseaseClick(disease)}
-                            className="w-full text-left px-4 py-3 rounded-md hover:bg-green-50 text-gray-700 hover:text-green-700 text-sm font-medium transition-colors"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.02, duration: 0.2 }}
-                            whileHover={{ x: 4, backgroundColor: "rgba(240, 253, 244, 1)" }}
-                          >
-                            {disease}
-                          </motion.button>
-                        ))}
-                      </div>
-                    </motion.div>
+                 <motion.div
+  className="absolute top-full right-0 translate-x-10 mt-2 w-[750px] bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg shadow-xl border border-emerald-800 z-50"
+  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+  animate={{ opacity: 1, y: 0, scale: 1 }}
+  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+  transition={{ duration: 0.2 }}
+  onMouseEnter={() => setIsAilmentsOpen(true)}
+  onMouseLeave={() => setIsAilmentsOpen(false)}
+>
+  <div className="p-4 grid grid-cols-3 gap-1">
+    {DISEASES.map((disease, index) => (
+      <motion.button
+        key={disease}
+        onClick={() => handleDiseaseClick(disease)}
+        className="text-left px-3 py-1.5 rounded-md text-white hover:bg-emerald-800 text-xs font-medium transition-colors flex items-center w-full"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.01, duration: 0.2 }}
+        whileHover={{ x: 3, backgroundColor: 'rgba(6,78,59,0.8)' }}
+      >
+        <span className="mr-2 text-emerald-300">▶</span>
+        {disease}
+      </motion.button>
+    ))}
+  </div>
+</motion.div>
+
                   )}
                 </AnimatePresence>
               </div>
+
+              {navLinks.slice(2).map((link, index) => (
+                <motion.a
+                  key={link.name}
+                  href={link.path}
+                  className="text-gray-700 hover:text-green-700 text-sm font-medium transition-colors relative group"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: (index + 3) * 0.05, duration: 0.3 }}
+                  whileHover={{ y: -2 }}
+                >
+                  {link.name}
+                  <motion.span
+                    className="absolute bottom-0 left-0 h-0.5 bg-green-700"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              ))}
             </nav>
           </div>
 
@@ -339,7 +358,7 @@ export default function Header() {
 
                 {/* Mobile Navigation */}
                 <nav className="flex flex-col space-y-1 pt-2">
-                  {navLinks.map((link, index) => (
+                  {navLinks.slice(0, 2).map((link, index) => (
                     <motion.a
                       key={link.name}
                       href={link.path}
@@ -356,10 +375,9 @@ export default function Header() {
 
                   {/* Mobile Ailments Accordion */}
                   <motion.div
-                    className="border-t border-gray-100 pt-2 mt-2"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
+                    transition={{ delay: 0.25 }}
                   >
                     <motion.button
                       onClick={() => setIsAilmentsOpen(!isAilmentsOpen)}
@@ -401,6 +419,21 @@ export default function Header() {
                       )}
                     </AnimatePresence>
                   </motion.div>
+
+                  {navLinks.slice(2).map((link, index) => (
+                    <motion.a
+                      key={link.name}
+                      href={link.path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-gray-700 hover:text-green-700 hover:bg-green-50 px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + index * 0.05 }}
+                      whileHover={{ x: 4 }}
+                    >
+                      {link.name}
+                    </motion.a>
+                  ))}
                 </nav>
               </div>
             </motion.div>

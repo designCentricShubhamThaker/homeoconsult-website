@@ -40,7 +40,16 @@ export default function DiseaseTreatmentSection({ disease }) {
 
   const fetchPackages = async () => {
     try {
-      const response = await fetch('https://lacey-flocculable-sherice.ngrok-free.dev/packages');
+     const response = await fetch(
+      'https://lacey-flocculable-sherice.ngrok-free.dev/packages',
+      {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'true', 
+          'Content-Type': 'application/json',
+        },
+      }
+    );
       const data = await response.json();
       setPackages(data);
       setLoading(false);

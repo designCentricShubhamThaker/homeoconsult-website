@@ -108,16 +108,15 @@ function BenefitCard({ image, title, description }) {
     <div className="hover:shadow-lg transition-shadow duration-300">
       <div className="flex flex-col items-center text-center gap-2">
         {/* Icon with circle background */}
-        <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-50 rounded-full flex items-center justify-center shadow-sm">
-          <img src={image} alt={title} className="w-10 h-10" />
+        <div >
+          <img src={image} alt={title} className="w-35 h-30" />
         </div>
         
-        {/* Title */}
+  
         <h3 className="text-base font-bold text-green-700">
           {title}
         </h3>
         
-        {/* Description */}
         <p className="text-xs text-gray-600 leading-relaxed">
           {description}
         </p>

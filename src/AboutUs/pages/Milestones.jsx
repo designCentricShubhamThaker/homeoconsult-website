@@ -1,690 +1,328 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 
+const MilestonesTimeline = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
 
-
-// import React from 'react';
-// import { motion } from 'framer-motion';
-
-// export default function Milestones() {
-//   // Circle dimensions
-//   const circleRadius = 128; // outer circle radius (256px diameter / 2)
-//   const centerX = 700; // center point X
-//   const centerY = 450; // center point Y
-
-//   // Calculate dot position on circle perimeter
-//   const getDotPosition = (angle) => {
-//     const angleRad = (angle * Math.PI) / 180;
-//     const x = centerX + Math.cos(angleRad) * circleRadius;
-//     const y = centerY + Math.sin(angleRad) * circleRadius;
-//     return { x, y };
-//   };
-
-//   // Calculate text position (further out from circle)
-//   const getTextPosition = (angle, offset = 200) => {
-//     const angleRad = (angle * Math.PI) / 180;
-//     const x = centerX + Math.cos(angleRad) * (circleRadius + offset);
-//     const y = centerY + Math.sin(angleRad) * (circleRadius + offset);
-//     return { x, y };
-//   };
-
-//   return (
-//     <section className="w-full relative py-16 md:py-20 lg:py-24 overflow-hidden bg-gradient-to-br from-green-700 to-green-600">
-//       <div
-//         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-//         style={{
-//           backgroundImage: "url('/milestones.jpg')",
-//         }}
-//       />
-
-//       <div className="relative  mx-auto px-4">
-//         <div className=" mx-auto">
-//           <div className="relative" style={{ height: '900px' }}>
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0.5 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6 }}
-//               className="relative z-20"
-//               style={{
-//                 position: 'absolute',
-//                 top: "320px",
-//                 left: "570px",
-//                 transform: 'translate(-50%, -50%)'
-//               }}
-//             >
-//               <div className="relative w-64 h-64 rounded-full border-4 border-white flex items-center justify-center">
-//                 <div className="w-52 h-52 rounded-full bg-white flex items-center justify-center shadow-2xl">
-//                   <h2 className="text-green-700 font-bold text-4xl">
-//                     Milestones
-//                   </h2>
-//                 </div>
-//               </div>
-//             </motion.div>
-
-//             {/* 1. Established In 1975 - 120° (10 o'clock) */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(120).y - 7.5}px`,
-//                 left: `${getDotPosition(120).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: 20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.2 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(120, 30).y - 20}px`,
-//                 left: `${getTextPosition(120, 30).x - 280}px`,
-//                 width: '260px'
-//               }}
-//             >
-//               <div className="text-right">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">Established In 1975</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">Over 50 years of trusted medical consultancy.</p>
-//               </div>
-//             </motion.div>
-
-//             {/* 2. 4 Clinical Centres - 165° */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, delay: 0.1, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(165).y - 7.5}px`,
-//                 left: `${getDotPosition(165).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: 20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.3 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(165, 30).y - 20}px`,
-//                 left: `${getTextPosition(165, 30).x - 280}px`,
-//                 width: '260px'
-//               }}
-//             >
-//               <div className="text-right">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">4 Clinical Centres</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">across Bombay serving diverse communities.</p>
-//               </div>
-//             </motion.div>
-
-//             {/* 3. 60,000+ Cases - 210° */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, delay: 0.2, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(210).y - 7.5}px`,
-//                 left: `${getDotPosition(210).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: 20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.4 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(210, 30).y - 20}px`,
-//                 left: `${getTextPosition(210, 30).x - 280}px`,
-//                 width: '260px'
-//               }}
-//             >
-//               <div className="text-right">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">60,000+ Cases</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">consulted and treated worldwide.</p>
-//               </div>
-//             </motion.div>
-
-//             {/* 4. Research & Evidence-Based Practice - 255° */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, delay: 0.3, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(255).y - 7.5}px`,
-//                 left: `${getDotPosition(255).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: 20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.5 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(255, 30).y - 20}px`,
-//                 left: `${getTextPosition(255, 30).x - 300}px`,
-//                 width: '280px'
-//               }}
-//             >
-//               <div className="text-right">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">Research & Evidence-Based Practice</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">ensuring scientific clinical outcomes.</p>
-//               </div>
-//             </motion.div>
-
-//             {/* 5. Published Authors - 300° */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(300).y - 7.5}px`,
-//                 left: `${getDotPosition(300).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: -20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.6 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(300, 30).y - 20}px`,
-//                 left: `${getTextPosition(300, 30).x + 20}px`,
-//                 width: '260px'
-//               }}
-//             >
-//               <div className="text-left">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">Published Authors</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">Numerous articles in news and medical media.</p>
-//               </div>
-//             </motion.div>
-
-//             {/* 6. Pioneers in Homeopathic Formulations - 345° */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, delay: 0.5, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(345).y - 7.5}px`,
-//                 left: `${getDotPosition(345).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: -20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.7 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(345, 30).y - 20}px`,
-//                 left: `${getTextPosition(345, 30).x + 20}px`,
-//                 width: '280px'
-//               }}
-//             >
-//               <div className="text-left">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">Pioneers in Homeopathic Formulations</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">www.nubindia.com</p>
-//               </div>
-//             </motion.div>
-
-//             {/* 7. Affiliated with Leading Medical & Pharma Bodies - 30° */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, delay: 0.6, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(30).y - 7.5}px`,
-//                 left: `${getDotPosition(30).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: -20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.8 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(30, 30).y - 20}px`,
-//                 left: `${getTextPosition(30, 30).x + 20}px`,
-//                 width: '300px'
-//               }}
-//             >
-//               <div className="text-left">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">Affiliated with Leading Medical & Pharma Bodies</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">AMRSH, CCH, HAMM, HARP.</p>
-//               </div>
-//             </motion.div>
-
-//             {/* 8. Global Presence - 75° */}
-//             <motion.div
-//               initial={{ opacity: 0, scale: 0 }}
-//               whileInView={{ opacity: 1, scale: 1 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.4, delay: 0.7, type: "spring", stiffness: 200 }}
-//               className="bg-white rounded-full shadow-xl z-30"
-//               style={{
-//                 position: 'absolute',
-//                 width: '15px',
-//                 height: '15px',
-//                 top: `${getDotPosition(75).y - 7.5}px`,
-//                 left: `${getDotPosition(75).x - 7.5}px`
-//               }}
-//             />
-//             <motion.div
-//               initial={{ opacity: 0, x: -20 }}
-//               whileInView={{ opacity: 1, x: 0 }}
-//               viewport={{ once: true }}
-//               transition={{ duration: 0.6, delay: 0.9 }}
-//               className="z-10"
-//               style={{
-//                 position: 'absolute',
-//                 top: `${getTextPosition(75, 30).y - 20}px`,
-//                 left: `${getTextPosition(75, 30).x + 20}px`,
-//                 width: '260px'
-//               }}
-//             >
-//               <div className="text-left">
-//                 <h3 className="text-white font-bold text-base mb-1 leading-tight">Global Presence</h3>
-//                 <p className="text-white text-sm opacity-90 leading-snug">Patients from all over the world.</p>
-//               </div>
-//             </motion.div>
-
-//           </div>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-
-import React from 'react';
-import { motion } from 'framer-motion';
-
-export default function Milestones() {
-  // Circle dimensions - now relative to container
-  const circleRadius = 128;
-  const centerX = '50%'; // Use percentage for centering
-  const centerY = '50%'; // Use percentage for centering
-
-  // Calculate dot position on circle perimeter
-  const getDotPosition = (angle) => {
-    const angleRad = (angle * Math.PI) / 180;
-    const x = Math.cos(angleRad) * circleRadius;
-    const y = Math.sin(angleRad) * circleRadius;
-    return { x, y };
-  };
-
-  // Calculate text position (further out from circle)
-  const getTextPosition = (angle, offset = 30) => {
-    const angleRad = (angle * Math.PI) / 180;
-    const x = Math.cos(angleRad) * (circleRadius + offset);
-    const y = Math.sin(angleRad) * (circleRadius + offset);
-    return { x, y };
-  };
+  const milestones = [
+    {
+      title: "Established in 1975",
+      description: "Over 50 years of trusted medical consultancy.",
+      position: "top"
+    },
+    {
+      title: "4 Clinical Centres",
+      description: "across Bombay serving diverse communities.",
+      position: "bottom"
+    },
+    {
+      title: "60,000+ Cases",
+      description: "consulted and treated worldwide.",
+      position: "top"
+    },
+    {
+      title: "Global Presence",
+      description: "Patients from all over the world.",
+      position: "bottom"
+    },
+    {
+      title: "Published Authors",
+      description: "Numerous articles in news and medical media.",
+      position: "top"
+    },
+    {
+      title: "Pioneers in Homeopathic Formulations",
+      description: "www.nhpindia.com",
+      position: "bottom"
+    },
+    {
+      title: "Research & Evidence-Based Practice",
+      description: "ensuring scientific clinical outcomes.",
+      position: "top"
+    },
+    {
+      title: "Affiliated with Leading Medical & Pharma Bodies",
+      description: "AMRSH, CCH, HAMM, HARP.",
+      position: "bottom"
+    }
+  ];
 
   return (
-    <section className="w-full relative overflow-hidden" style={{ height: '85vh' }}>
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-        style={{
-          backgroundImage: "url('/milestones.jpg')",
-        }}
-      />
+    <div ref={ref} className="w-full">
+      <div className="hidden md:block relative w-full h-screen bg-cover bg-center overflow-hidden" 
+           style={{
+             backgroundImage: `url('/milestones.jpg')`,
+           }}>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute top-8 left-0 right-0 text-center"
+        >
+          <h1 className="text-white text-5xl font-bold tracking-wide">Milestones</h1>
+        </motion.div>
 
-      <div className="relative h-full flex items-center justify-center">
-        <div className="relative w-full h-full mx-auto px-4">
-          <div className="relative flex items-center justify-center h-full">
-            {/* Central Milestone Circle */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative z-20"
-            >
-              <div className="relative w-64 h-64 rounded-full border-4 border-white flex items-center justify-center">
-                <div className="w-52 h-52 rounded-full bg-white flex items-center justify-center shadow-2xl">
-                  <h2 className="text-green-700 font-bold text-4xl">
-                    Milestones
-                  </h2>
+        <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 px-8">
+          <div className="relative w-full mx-auto" style={{ maxWidth: '95%' }}>
+            <motion.div 
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
+              className="h-0.5 bg-white origin-left"
+            />
+            
+            <div className="flex justify-between items-center absolute top-0 left-0 right-0 h-0">
+              {milestones.map((milestone, index) => (
+                <motion.div 
+                  key={index} 
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: 0.8 + (index * 0.25),
+                    ease: "easeOut"
+                  }}
+                  className="relative flex flex-col items-center" 
+                  style={{ width: `${100 / milestones.length}%` }}
+                >
+                  {milestone.position === 'top' ? (
+                    <>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                        transition={{ 
+                          duration: 0.6, 
+                          delay: 1.2 + (index * 0.25),
+                          ease: "easeOut"
+                        }}
+                        className="absolute text-center px-3"
+                        style={{ 
+                          width: '190px',
+                          bottom: '90px',
+                          marginLeft: index === 0 ? '30px' : index === milestones.length - 1 ? '-30px' : '0'
+                        }}
+                      >
+                        <h3 className="text-white font-bold text-base leading-tight mb-2">
+                          {milestone.title}
+                        </h3>
+                        <p className="text-white text-sm leading-snug opacity-90">
+                          {milestone.description}
+                        </p>
+                      </motion.div>
+
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={isInView ? { scale: 1 } : { scale: 0 }}
+                        transition={{ 
+                          duration: 0.3, 
+                          delay: 1.3 + (index * 0.25),
+                          ease: "easeOut"
+                        }}
+                        className="absolute w-2.5 h-2.5 rounded-full bg-green-500"
+                        style={{ bottom: '78px' }}
+                      />
+                      
+                      <motion.div 
+                        initial={{ scaleY: 0 }}
+                        animate={isInView ? { scaleY: 1 } : { scaleY: 0 }}
+                        transition={{ 
+                          duration: 0.4, 
+                          delay: 0.9 + (index * 0.25),
+                          ease: "easeOut"
+                        }}
+                        className="absolute w-0.5 bg-white origin-top"
+                        style={{ 
+                          height: '65px',
+                          top: '-78px'
+                        }}
+                      />
+                      
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={isInView ? { scale: 1 } : { scale: 0 }}
+                        transition={{ 
+                          duration: 0.5, 
+                          delay: 1.1 + (index * 0.25),
+                          ease: "backOut"
+                        }}
+                        className="absolute w-7 h-7 rounded-full bg-green-600 border-white z-10"
+                        style={{ 
+                          borderWidth: '3px',
+                          boxShadow: '0 0 0 2px rgba(255,255,255,0.3)',
+                          top: '-14px'
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={isInView ? { scale: 1 } : { scale: 0 }}
+                        transition={{ 
+                          duration: 0.5, 
+                          delay: 1.1 + (index * 0.25),
+                          ease: "backOut"
+                        }}
+                        className="absolute w-7 h-7 rounded-full bg-green-600 border-white z-10"
+                        style={{ 
+                          borderWidth: '3px',
+                          boxShadow: '0 0 0 2px rgba(255,255,255,0.3)',
+                          top: '-14px'
+                        }}
+                      />
+                      
+              
+                      <motion.div 
+                        initial={{ scaleY: 0 }}
+                        animate={isInView ? { scaleY: 1 } : { scaleY: 0 }}
+                        transition={{ 
+                          duration: 0.4, 
+                          delay: 0.9 + (index * 0.25),
+                          ease: "easeOut"
+                        }}
+                        className="absolute w-0.5 bg-white origin-top"
+                        style={{ 
+                          height: '65px',
+                          top: '13px'
+                        }}
+                      />
+                      
+                 
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={isInView ? { scale: 1 } : { scale: 0 }}
+                        transition={{ 
+                          duration: 0.3, 
+                          delay: 1.3 + (index * 0.25),
+                          ease: "easeOut"
+                        }}
+                        className="absolute w-2.5 h-2.5 rounded-full bg-green-500"
+                        style={{ top: '78px' }}
+                      />
+
+                 
+                      <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+                        transition={{ 
+                          duration: 0.6, 
+                          delay: 1.2 + (index * 0.25),
+                          ease: "easeOut"
+                        }}
+                        className="absolute text-center px-3"
+                        style={{ 
+                          width: '190px',
+                          top: '90px',
+                          marginLeft: index === 0 ? '30px' : index === milestones.length - 1 ? '-30px' : '0'
+                        }}
+                      >
+                        <h3 className="text-white font-bold text-base leading-tight mb-2">
+                          {milestone.title}
+                        </h3>
+                        <p className="text-white text-sm leading-snug opacity-90">
+                          {milestone.description}
+                        </p>
+                      </motion.div>
+                    </>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 0.15, x: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="absolute left-20 top-1/2 -translate-y-1/2"
+        >
+          <svg width="140" height="320" viewBox="0 0 140 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="70" cy="45" rx="28" ry="32" fill="rgba(0,0,0,0.4)"/>
+            <rect x="48" y="77" width="44" height="85" rx="12" fill="rgba(0,0,0,0.4)"/>
+            <rect x="30" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
+            <rect x="88" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
+            <rect x="53" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
+            <rect x="73" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
+          </svg>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 0.15, x: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="absolute right-20 top-1/2 -translate-y-1/2"
+        >
+          <svg width="140" height="320" viewBox="0 0 140 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="70" cy="45" rx="28" ry="32" fill="rgba(0,0,0,0.4)"/>
+            <rect x="48" y="77" width="44" height="85" rx="12" fill="rgba(0,0,0,0.4)"/>
+            <rect x="30" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
+            <rect x="88" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
+            <rect x="53" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
+            <rect x="73" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
+          </svg>
+        </motion.div>
+      </div>
+
+      <div className="md:hidden bg-white py-8 px-4">
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-green-800 text-3xl font-bold text-center mb-12"
+        >
+          Milestones
+        </motion.h1>
+        
+        <div className="relative max-w-md mx-auto">
+          <motion.div 
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ duration: 1.2, delay: 0.3 }}
+            className="absolute left-6 top-0 bottom-0 w-0.5 bg-green-700 origin-top"
+          />
+          
+          <div className="space-y-12">
+            {milestones.map((milestone, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: 0.5 + (index * 0.15),
+                  ease: "easeOut"
+                }}
+                className="relative pl-16"
+              >
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ 
+                    duration: 0.4, 
+                    delay: 0.6 + (index * 0.15),
+                    ease: "backOut"
+                  }}
+                  className="absolute left-3.5 top-1 w-5 h-5 rounded-full border-4 border-green-700 bg-white"
+                />
+                
+                <div>
+                  <h3 className="text-green-800 font-bold text-lg leading-tight mb-2">
+                    {milestone.title}
+                  </h3>
+                  <p className="text-gray-700 text-base leading-relaxed">
+                    {milestone.description}
+                  </p>
                 </div>
-              </div>
-            </motion.div>
-
-            {/* 1. Established In 1975 - 120° (10 o'clock) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(120).x}px), calc(-50% + ${getDotPosition(120).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '20%',
-                top: '20%',
-                transform: `translate(calc(-50% + ${getTextPosition(120, 30).x - 280}px), calc(-50% + ${getTextPosition(120, 30).y - 20}px))`,
-                width: '260px'
-              }}
-            >
-              <div className="text-right">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">Established In 1975</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">Over 50 years of trusted medical consultancy.</p>
-              </div>
-            </motion.div>
-
-            {/* 2. 4 Clinical Centres - 165° */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.1, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(165).x}px), calc(-50% + ${getDotPosition(165).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '15%',
-                top: '40%',
-                transform: `translate(calc(-50% + ${getTextPosition(165, 30).x - 280}px), calc(-50% + ${getTextPosition(165, 30).y - 20}px))`,
-                width: '260px'
-              }}
-            >
-              <div className="text-right">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">4 Clinical Centres</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">across Bombay serving diverse communities.</p>
-              </div>
-            </motion.div>
-
-            {/* 3. 60,000+ Cases - 210° */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.2, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(210).x}px), calc(-50% + ${getDotPosition(210).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '20%',
-                top: '60%',
-                transform: `translate(calc(-50% + ${getTextPosition(210, 30).x - 280}px), calc(-50% + ${getTextPosition(210, 30).y - 20}px))`,
-                width: '260px'
-              }}
-            >
-              <div className="text-right">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">60,000+ Cases</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">consulted and treated worldwide.</p>
-              </div>
-            </motion.div>
-
-            {/* 4. Research & Evidence-Based Practice - 255° */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.3, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(255).x}px), calc(-50% + ${getDotPosition(255).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '35%',
-                top: '80%',
-                transform: `translate(calc(-50% + ${getTextPosition(255, 30).x - 300}px), calc(-50% + ${getTextPosition(255, 30).y - 20}px))`,
-                width: '280px'
-              }}
-            >
-              <div className="text-right">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">Research & Evidence-Based Practice</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">ensuring scientific clinical outcomes.</p>
-              </div>
-            </motion.div>
-
-            {/* 5. Published Authors - 300° */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(300).x}px), calc(-50% + ${getDotPosition(300).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '60%',
-                top: '60%',
-                transform: `translate(calc(-50% + ${getTextPosition(300, 30).x + 20}px), calc(-50% + ${getTextPosition(300, 30).y - 20}px))`,
-                width: '260px'
-              }}
-            >
-              <div className="text-left">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">Published Authors</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">Numerous articles in news and medical media.</p>
-              </div>
-            </motion.div>
-
-            {/* 6. Pioneers in Homeopathic Formulations - 345° */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.5, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(345).x}px), calc(-50% + ${getDotPosition(345).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '60%',
-                top: '20%',
-                transform: `translate(calc(-50% + ${getTextPosition(345, 30).x + 20}px), calc(-50% + ${getTextPosition(345, 30).y - 20}px))`,
-                width: '280px'
-              }}
-            >
-              <div className="text-left">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">Pioneers in Homeopathic Formulations</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">www.nubindia.com</p>
-              </div>
-            </motion.div>
-
-            {/* 7. Affiliated with Leading Medical & Pharma Bodies - 30° */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.6, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(30).x}px), calc(-50% + ${getDotPosition(30).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '65%',
-                top: '40%',
-                transform: `translate(calc(-50% + ${getTextPosition(30, 30).x + 20}px), calc(-50% + ${getTextPosition(30, 30).y - 20}px))`,
-                width: '300px'
-              }}
-            >
-              <div className="text-left">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">Affiliated with Leading Medical & Pharma Bodies</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">AMRSH, CCH, HAMM, HARP.</p>
-              </div>
-            </motion.div>
-
-            {/* 8. Global Presence - 75° */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.7, type: "spring", stiffness: 200 }}
-              className="bg-white rounded-full shadow-xl z-30"
-              style={{
-                position: 'absolute',
-                width: '15px',
-                height: '15px',
-                left: '50%',
-                top: '50%',
-                transform: `translate(calc(-50% + ${getDotPosition(75).x}px), calc(-50% + ${getDotPosition(75).y}px))`
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-              className="z-10"
-              style={{
-                position: 'absolute',
-                left: '40%',
-                top: '5%',
-                transform: `translate(calc(-50% + ${getTextPosition(75, 30).x + 20}px), calc(-50% + ${getTextPosition(75, 30).y - 20}px))`,
-                width: '260px'
-              }}
-            >
-              <div className="text-left">
-                <h3 className="text-white font-bold text-base mb-1 leading-tight">Global Presence</h3>
-                <p className="text-white text-sm opacity-90 leading-snug">Patients from all over the world.</p>
-              </div>
-            </motion.div>
-
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
-}
+};
+
+export default MilestonesTimeline;

@@ -14,7 +14,7 @@ export default function BlogListing() {
 
 
   const API_URL = 'https://lacey-flocculable-sherice.ngrok-free.dev/blogs';
-  const WS_URL = 'ws://localhost:8000/blogs/ws';
+  const WS_URL = 'wss://lacey-flocculable-sherice.ngrok-free.dev/blogs/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
   const POLLING_INTERVAL = 5000;
@@ -187,7 +187,7 @@ export default function BlogListing() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className=" bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold text-center mb-12">
             <span className="text-[#207755]">Latest</span>{' '}
@@ -212,7 +212,7 @@ export default function BlogListing() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className=" bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <p className="text-red-600 font-semibold mb-2">Error loading blogs</p>

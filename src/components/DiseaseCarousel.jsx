@@ -18,7 +18,7 @@ const DiseaseCarousel = () => {
 
   // Configuration
   const API_URL = 'https://lacey-flocculable-sherice.ngrok-free.dev/disease-cards';
-  const WS_URL = 'ws://localhost:8000/disease-cards/ws';
+  const WS_URL = 'wss://lacey-flocculable-sherice.ngrok-free.dev/disease-cards/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
   const POLLING_INTERVAL = 5000;

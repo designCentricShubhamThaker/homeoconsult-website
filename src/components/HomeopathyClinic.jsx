@@ -79,7 +79,7 @@ export default function HomeopathyClinic() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // MOBILE VIEW
+
   if (isMobile) {
     return (
       <div className=" bg-linear-to-br from-gray-50 to-gray-100 overflow-x-hidden">
@@ -216,7 +216,7 @@ export default function HomeopathyClinic() {
         </div>
 
 
-     <div className="w-[40%] bg-[#147140] px-6 py-4 flex items-center justify-center">
+     <div className="w-[40%] bg-[#147140] px-4 py-4 flex items-center justify-center">
   <AnimatePresence mode="wait">
     <motion.div
       key={selectedTopic.id}
@@ -226,7 +226,7 @@ export default function HomeopathyClinic() {
       transition={{ duration: 0.4 }}
       className="w-full"
     >
-      <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-white text-sm">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-8  text-white text-sm">
         {selectedTopic.diseases.flat().map((disease, idx) => (
           <motion.div
             key={idx}

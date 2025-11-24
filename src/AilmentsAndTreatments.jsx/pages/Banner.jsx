@@ -24,7 +24,7 @@ const Banner = () => {
             'Content-Type': 'application/json'
           }
         });
-        // const response = await fetch(`http://localhost:8000/diseases/by-name/${diseaseName}`, {
+        // const response = await fetch(`https://lacey-flocculable-sherice.ngrok-free.dev/diseases/by-name/${diseaseName}`, {
         //   headers: {
         //     'ngrok-skip-browser-warning': 'true',
         //     'Content-Type': 'application/json'
