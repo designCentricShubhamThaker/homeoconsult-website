@@ -1,5 +1,6 @@
 import React from 'react';
 import { Linkedin } from 'lucide-react';
+import { FaLinkedinIn } from "react-icons/fa";
 
 export default function AboutDoctor() {
   return (
@@ -32,10 +33,10 @@ export default function AboutDoctor() {
               </div>
               <a
                 href="#"
-                className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded flex items-center justify-center hover:bg-blue-700 transition-colors"
+                className="shrink-0 w-10 h-10  rounded flex items-center justify-center bg-[#0077b5] transition-colors"
                 aria-label="LinkedIn Profile"
               >
-                <Linkedin className="w-6 h-6 text-white" />
+                <FaLinkedinIn  className="w-6 h-6 text-white" />
               </a>
             </div>
 

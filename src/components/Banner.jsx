@@ -6,13 +6,13 @@ const Banner = () => {
   const [isTransitioning, setIsTransitioning] = useState(false)
 
   const slides = [
-    {
-      id: 1,
-      image: '/banner1.jpg',
-      title: 'Why Homeopathy',
-      subtitle: 'Learn about our research proven treatment.',
-      buttonText: 'Learn More',
-    },
+    // {
+    //   id: 1,
+    //   image: '/banner1.jpg',
+    //   title: 'Why Homeopathy',
+    //   subtitle: 'Learn about our research proven treatment.',
+    //   buttonText: 'Learn More',
+    // },
     {
       id: 2,
       image: '/banner2.jpg',

@@ -41,7 +41,7 @@ export default function DiseaseTreatmentSection({ disease }) {
   const fetchPackages = async () => {
     try {
      const response = await fetch(
-      'https://lacey-flocculable-sherice.ngrok-free.dev/packages',
+      'https://lorinda-remotest-kase.ngrok-free.dev/packages',
       {
         method: 'GET',
         headers: {

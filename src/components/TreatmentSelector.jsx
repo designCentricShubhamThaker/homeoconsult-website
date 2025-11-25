@@ -41,7 +41,7 @@ export default function TreatmentSelector() {
   const fetchPackages = async () => {
     try {
       const response = await fetch(
-        'https://lacey-flocculable-sherice.ngrok-free.dev/packages',
+        'https://lorinda-remotest-kase.ngrok-free.dev/packages',
         {
           method: 'GET',
           headers: {
@@ -127,36 +127,36 @@ export default function TreatmentSelector() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 py-4 md:py-6 px-3 md:px-6 flex items-center">
-      <div className="mx-auto w-full max-w-7xl">
-        <div className="text-center mb-4 md:mb-5">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+    <div className=" bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6 lg:px-8 flex items-center">
+      <div className="mx-auto w-full">
+        <div className="text-center mb-4 sm:mb-5 md:mb-6 lg:mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
             <span className="text-[#207755]">Start Your Treatment</span>{' '}
-            <span className="text-gray-600">Today</span>
+            <span className="text-[#207755] font-normal">Today</span>
           </h1>
-          <p className="text-gray-600 text-xs md:text-sm mt-1">Choose your personalized treatment plan</p>
+          <p className="text-gray-600 text-xs sm:text-sm md:text-base mt-1">Choose your personalized treatment plan</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
           {/* Left Card - Comprehensive Plan */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-emerald-100 flex flex-col h-auto md:max-h-[calc(100vh-12rem)]">
-            <div className="bg-linear-to-r from-[#207755] via-emerald-600 to-teal-600 p-3 md:p-4 relative overflow-hidden shrink-0">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-12 -mb-12"></div>
-              <h2 className="text-lg md:text-xl font-bold text-white text-center relative z-10">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-emerald-100 flex flex-col">
+            <div className="bg-linear-to-r from-[#207755] via-emerald-600 to-teal-600 p-3 sm:p-4 md:p-5 relative overflow-hidden shrink-0">
+              <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-white opacity-5 rounded-full -mr-12 sm:-mr-16 -mt-12 sm:-mt-16"></div>
+              <div className="absolute bottom-0 left-0 w-20 h-20 sm:w-24 sm:h-24 bg-white opacity-5 rounded-full -ml-10 sm:-ml-12 -mb-10 sm:-mb-12"></div>
+              <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center relative z-10">
                 Comprehensive Plan
               </h2>
-              <p className="text-emerald-50 text-center text-xs mt-0.5 relative z-10">Personalized treatment journey</p>
+              <p className="text-emerald-50 text-center text-xs sm:text-sm mt-0.5 sm:mt-1 relative z-10">Personalized treatment journey</p>
             </div>
 
-            <div className="p-3 md:p-4 flex-1">
-              <div className="space-y-2.5">
-                {/* Primary Disease & Additional Conditions - Side by Side on Desktop */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="p-3 sm:p-4 md:p-5 lg:p-6 flex-1">
+              <div className="space-y-2 sm:space-y-2.5 md:space-y-3">
+                {/* Primary Disease & Additional Conditions */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-2.5 md:gap-3">
                   {/* Primary Disease */}
-                  <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2.5 border border-emerald-200">
-                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1.5">
-                      <div className="w-5 h-5 bg-[#207755] rounded-full flex items-center justify-center text-white font-bold text-xs">1</div>
+                  <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2 sm:p-2.5 md:p-3 border border-emerald-200">
+                    <label className="text-xs sm:text-sm font-semibold text-[#207755] mb-1 sm:mb-1.5 flex items-center gap-1 sm:gap-1.5">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 bg-[#207755] rounded-full flex items-center justify-center text-white font-bold text-[10px] sm:text-xs">1</div>
                       Primary Disease
                     </label>
                     <div className="relative">
@@ -167,26 +167,26 @@ export default function TreatmentSelector() {
                           setSelectedRegion('');
                           setSelectedTerm('');
                         }}
-                        className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755]"
+                        className="w-full bg-white border border-emerald-200 rounded-lg p-1.5 sm:p-2 text-xs sm:text-sm text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755]"
                       >
                         <option value="" className="text-gray-400">Select primary condition</option>
                         {DISEASES.map(disease => (
                           <option key={disease} value={disease}>{disease}</option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#207755] pointer-events-none" />
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#207755] pointer-events-none" />
                     </div>
                   </div>
 
                   {/* Secondary Diseases */}
-                  <div className="bg-linear-to-br from-teal-50 to-emerald-50 rounded-lg p-2.5 border border-teal-200">
-                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1.5">
-                      <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xs">2</div>
+                  <div className="bg-linear-to-br from-teal-50 to-emerald-50 rounded-lg p-2 sm:p-2.5 md:p-3 border border-teal-200">
+                    <label className="text-xs sm:text-sm font-semibold text-[#207755] mb-1 sm:mb-1.5 flex items-center gap-1 sm:gap-1.5">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-[10px] sm:text-xs">2</div>
                       Additional Conditions
                     </label>
                     <div className="relative">
                       <div
-                        className="bg-white border border-teal-200 rounded-lg p-2 cursor-pointer hover:border-teal-600 transition-all min-h-[2rem]"
+                        className="bg-white border border-teal-200 rounded-lg p-1.5 sm:p-2 cursor-pointer hover:border-teal-600 transition-all min-h-[1.75rem] sm:min-h-[2rem]"
                         onClick={() => setShowSecondaryDropdown(!showSecondaryDropdown)}
                       >
                         {secondaryDiseases.length > 0 ? (
@@ -194,11 +194,11 @@ export default function TreatmentSelector() {
                             {secondaryDiseases.map(disease => (
                               <span
                                 key={disease}
-                                className="bg-linear-to-r from-teal-600 to-emerald-600 text-white px-2 py-0.5 rounded-full text-xs flex items-center gap-1"
+                                className="bg-linear-to-r from-teal-600 to-emerald-600 text-white px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs flex items-center gap-0.5 sm:gap-1"
                               >
                                 {disease.length > 12 ? disease.substring(0, 12) + '...' : disease}
                                 <X
-                                  className="w-3 h-3 cursor-pointer hover:bg-white hover:text-teal-600 rounded-full"
+                                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 cursor-pointer hover:bg-white hover:text-teal-600 rounded-full"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     toggleSecondaryDisease(disease);
@@ -208,29 +208,29 @@ export default function TreatmentSelector() {
                             ))}
                           </div>
                         ) : (
-                          <span className="text-gray-400 text-xs">Optional</span>
+                          <span className="text-gray-400 text-xs sm:text-sm">Optional</span>
                         )}
                       </div>
                       {showSecondaryDropdown && (
-                        <div className="absolute z-20 w-full mt-1 bg-white rounded-lg shadow-2xl border border-teal-200 max-h-48 overflow-hidden">
-                          <div className="p-2 border-b border-teal-100 sticky top-0 bg-white">
+                        <div className="absolute z-20 w-full mt-1 bg-white rounded-lg shadow-2xl border border-teal-200 max-h-40 sm:max-h-48 overflow-hidden">
+                          <div className="p-1.5 sm:p-2 border-b border-teal-100 sticky top-0 bg-white">
                             <div className="relative">
-                              <Search className="absolute left-2 top-2 w-3 h-3 text-gray-400" />
+                              <Search className="absolute left-2 top-1.5 sm:top-2 w-3 h-3 text-gray-400" />
                               <input
                                 type="text"
                                 placeholder="Search..."
-                                className="w-full pl-7 pr-2 py-1.5 text-xs border border-gray-200 rounded focus:border-teal-600 outline-none"
+                                className="w-full pl-6 sm:pl-7 pr-2 py-1 sm:py-1.5 text-xs border border-gray-200 rounded focus:border-teal-600 outline-none"
                                 value={secondarySearch}
                                 onChange={(e) => setSecondarySearch(e.target.value)}
                                 onClick={(e) => e.stopPropagation()}
                               />
                             </div>
                           </div>
-                          <div className="overflow-y-auto max-h-36">
+                          <div className="overflow-y-auto max-h-32 sm:max-h-36">
                             {filteredSecondaryDiseases.map(disease => (
                               <div
                                 key={disease}
-                                className="px-3 py-1.5 text-xs hover:bg-teal-50 cursor-pointer flex items-center gap-2"
+                                className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs hover:bg-teal-50 cursor-pointer flex items-center gap-1.5 sm:gap-2"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleSecondaryDisease(disease);
@@ -249,12 +249,12 @@ export default function TreatmentSelector() {
                   </div>
                 </div>
 
-                {/* Region & Term - Side by Side on Desktop */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {/* Region & Term */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-2.5 md:gap-3">
                   {/* Region Selection */}
-                  <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2.5 border border-emerald-200">
-                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5" />
+                  <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2 sm:p-2.5 md:p-3 border border-emerald-200">
+                    <label className="text-xs sm:text-sm font-semibold text-[#207755] mb-1 sm:mb-1.5 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       Region
                     </label>
                     <div className="relative">
@@ -265,21 +265,21 @@ export default function TreatmentSelector() {
                           setSelectedTerm('');
                         }}
                         disabled={availableRegions.length === 0}
-                        className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-white border border-emerald-200 rounded-lg p-1.5 sm:p-2 text-xs sm:text-sm text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <option value="">{availableRegions.length > 0 ? 'Select region' : (primaryDisease ? 'None available' : 'Select disease first')}</option>
                         {availableRegions.map(region => (
                           <option key={region} value={region}>{region}</option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#207755] pointer-events-none" />
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#207755] pointer-events-none" />
                     </div>
                   </div>
 
                   {/* Term Selection */}
-                  <div className="bg-linear-to-br from-teal-50 to-emerald-50 rounded-lg p-2.5 border border-teal-200">
-                    <label className=" text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5" />
+                  <div className="bg-linear-to-br from-teal-50 to-emerald-50 rounded-lg p-2 sm:p-2.5 md:p-3 border border-teal-200">
+                    <label className="text-xs sm:text-sm font-semibold text-[#207755] mb-1 sm:mb-1.5 flex items-center gap-1">
+                      <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       Duration
                     </label>
                     <div className="relative">
@@ -287,7 +287,7 @@ export default function TreatmentSelector() {
                         value={selectedTerm}
                         onChange={(e) => setSelectedTerm(e.target.value)}
                         disabled={availableTerms.length === 0}
-                        className="w-full bg-white border border-teal-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-teal-600 transition-all appearance-none focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-white border border-teal-200 rounded-lg p-1.5 sm:p-2 text-xs sm:text-sm text-gray-800 cursor-pointer hover:border-teal-600 transition-all appearance-none focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <option value="">{availableTerms.length > 0 ? 'Select duration' : (selectedRegion ? 'None available' : 'Select region first')}</option>
                         {availableTerms.map(term => (
@@ -296,22 +296,22 @@ export default function TreatmentSelector() {
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-teal-600 pointer-events-none" />
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-600 pointer-events-none" />
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Method */}
-                <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2.5 border border-emerald-200">
-                  <label className="text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1">
-                    <CreditCard className="w-3.5 h-3.5" />
+                <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-lg p-2 sm:p-2.5 md:p-3 border border-emerald-200">
+                  <label className="text-xs sm:text-sm font-semibold text-[#207755] mb-1 sm:mb-1.5 flex items-center gap-1">
+                    <CreditCard className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     Payment
                   </label>
                   <div className="relative">
                     <select
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755]"
+                      className="w-full bg-white border border-emerald-200 rounded-lg p-1.5 sm:p-2 text-xs sm:text-sm text-gray-800 cursor-pointer hover:border-[#207755] transition-all appearance-none focus:outline-none focus:border-[#207755] focus:ring-1 focus:ring-[#207755]"
                     >
                       <option value="">Select payment method</option>
                       <option value="Credit Card">Credit Card</option>
@@ -319,41 +319,45 @@ export default function TreatmentSelector() {
                       <option value="UPI">UPI</option>
                       <option value="Net Banking">Net Banking</option>
                     </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#207755] pointer-events-none" />
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#207755] pointer-events-none" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-3 md:p-4 border-t border-gray-100 shrink-0">
+            <div className="p-3 sm:p-4 md:p-5 lg:p-6 border-t border-gray-100 shrink-0 flex justify-center">
               <button
-                className="w-full bg-linear-to-r from-[#207755] via-emerald-600 to-teal-600 hover:from-emerald-700 hover:via-teal-700 hover:to-[#207755] text-white font-bold py-2.5 md:py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-xs md:text-sm"
+                className="rounded-full bg-[#147140] hover:from-emerald-700 hover:via-teal-700 hover:to-[#207755]
+    text-white font-bold py-2 sm:py-2.5 md:py-3 px-6 sm:px-8 md:px-10
+    transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]
+    text-xs sm:text-sm md:text-base"
                 onClick={handleStartTreatment}
               >
-                Start Your Treatment Journey
+                Start Treatment
               </button>
             </div>
+
           </div>
 
-          <div className="relative bg-[#E8E8E8] rounded-2xl shadow-xl overflow-hidden border border-gray-100 min-h-[400px] md:h-[calc(100vh-12rem)] flex flex-col">
+          <div className="relative bg-[#E8E8E8] rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col min-h-[400px] sm:min-h-[450px] lg:min-h-0">
             <img
               src="/map.jpg"
               alt="World Map"
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
             />
 
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center px-4">
-              <h2 className="text-black text-lg md:text-xl font-bold">
+            <div className="absolute top-3 sm:top-4 md:top-6 lg:top-8 left-1/2 transform -translate-x-1/2 text-center px-3 sm:px-4 z-10">
+              <h2 className="text-black text-base sm:text-lg md:text-xl lg:text-2xl font-bold">
                 <span className="font-bold">Personal</span>{' '}
                 <span className="font-normal">Consultations</span>
               </h2>
-              <p className="text-black text-xs md:text-sm mt-1 whitespace-nowrap">
+              <p className="text-black text-xs sm:text-sm md:text-base mt-0.5 sm:mt-1">
                 Looking for expert care in your vicinity? Look no further.
               </p>
             </div>
 
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 w-full flex justify-center">
-              <button className="bg-[#207755] hover:bg-emerald-700 text-white font-semibold py-2.5 md:py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-sm">
+            <div className="absolute bottom-3  sm:bottom-4 md:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 px-3 sm:px-4 w-full flex justify-center z-10">
+              <button className="bg-[#147140] rounded-full hover:bg-emerald-700 text-white font-semibold py-2 sm:py-2.5 md:py-3 px-4 sm:px-5 md:px-6 transition-all duration-300 shadow-md hover:shadow-lg text-xs sm:text-sm md:text-base">
                 Book an Appointment
               </button>
             </div>

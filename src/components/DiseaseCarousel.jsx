@@ -17,8 +17,8 @@ const DiseaseCarousel = () => {
   const containerRef = useRef(null);
 
   // Configuration
-  const API_URL = 'https://lacey-flocculable-sherice.ngrok-free.dev/disease-cards';
-  const WS_URL = 'wss://lacey-flocculable-sherice.ngrok-free.dev/disease-cards/ws';
+  const API_URL = 'https://lorinda-remotest-kase.ngrok-free.dev/disease-cards';
+  const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/disease-cards/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
   const POLLING_INTERVAL = 5000;
@@ -271,99 +271,94 @@ const DiseaseCarousel = () => {
   const displayCards = getDisplayCards();
 
   return (
-    <div
-      ref={containerRef}
-      className=" py-16 relative overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: "url('/bg2.jpg')" }}
-    >
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-300 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-teal-300 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 relative z-10">
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <h2 className="text-3xl text-center text-[#147140] font-bold">
-            Effective Homeopathic <span className="font-normal">Solutions</span>
-          </h2>
-
-        </div>
-
-        <div className="relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-            {displayCards.map((card, index) => {
-              const delay = index * 150;
-              const isFromLeft = index % 2 === 0;
-              return (
-                <div
-                  key={`${card.id}-${currentIndex}-${index}`}
-                  className="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-105 transition-all duration-300"
-                  style={{
-                    animation: isVisible && hasAnimated ? 'none' : `slideIn${isFromLeft ? 'Left' : 'Right'} 0.6s ease-out ${delay}ms both`,
-                  }}
-                >
-
-                  <div className="bg-[#147140] p-4 text-white">
-                    <h3 className="text-lg font-bold text-center mb-1">
-                      {card.title}
-                    </h3>
-                    <p className="text-xs text-emerald-100 text-center line-clamp-2">
-                      {card.description}
-                    </p>
-                  </div>
-
-                  <div className="relative h-48 bg-[#147140]">
-                    {card.image ? (
-                      <img
-                        src={getImageSrc(card.image)}
-                        alt={card.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.error('Image load error for:', card.title);
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <div className="text-emerald-300 text-5xl">🏥</div>
-                      </div>
-                    )}
-
-
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* CSS Animations */}
-      <style>{`
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-100px) scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-          }
-        }
-
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(100px) scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-          }
-        }
-      `}</style>
+  <div
+    ref={containerRef}
+    className="py-8 sm:py-12 md:py-16 relative overflow-hidden bg-cover bg-center"
+    style={{ backgroundImage: "url('/bg2.jpg')" }}
+  >
+    <div className="absolute inset-0 opacity-10">
+      <div className="absolute top-0 left-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-emerald-300 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-teal-300 rounded-full blur-3xl"></div>
     </div>
-  );
+
+    <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 relative z-10">
+      <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8 md:mb-10">
+        <h2 className="text-xl sm:text-2xl md:text-3xl text-center text-[#147140] font-bold">
+          Effective Homeopathic <span className="font-normal">Solutions</span>
+        </h2>
+      </div>
+
+      <div className="relative w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full">
+          {displayCards.map((card, index) => {
+            const delay = index * 150;
+            const isFromLeft = index % 2 === 0;
+            return (
+              <div
+                key={`${card.id}-${currentIndex}-${index}`}
+                className="bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl overflow-hidden transform hover:scale-105 transition-all duration-300 w-full"
+                style={{
+                  animation: isVisible && hasAnimated ? 'none' : `slideIn${isFromLeft ? 'Left' : 'Right'} 0.6s ease-out ${delay}ms both`,
+                }}
+              >
+                <div className="bg-[#147140] p-3 sm:p-4 text-white">
+                  <h3 className="text-base sm:text-lg font-bold text-center mb-1">
+                    {card.title}
+                  </h3>
+                  <p className="text-xs text-emerald-100 text-center line-clamp-2">
+                    {card.description}
+                  </p>
+                </div>
+
+                <div className="relative h-36 sm:h-40 md:h-44 lg:h-48 bg-[#147140]">
+                  {card.image ? (
+                    <img
+                      src={getImageSrc(card.image)}
+                      alt={card.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Image load error for:', card.title);
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-emerald-300 text-3xl sm:text-4xl md:text-5xl">🏥</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+
+    <style>{`
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-100px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(100px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+    `}</style>
+  </div>
+);
 };
 
 export default DiseaseCarousel;
