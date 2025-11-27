@@ -41,7 +41,7 @@ export default function TreatmentSelector() {
   const fetchPackages = async () => {
     try {
       const response = await fetch(
-        'https://lorinda-remotest-kase.ngrok-free.dev/packages',
+        'http://localhost:8000/packages',
         {
           method: 'GET',
           headers: {
@@ -130,8 +130,8 @@ export default function TreatmentSelector() {
     <div className=" bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6 lg:px-8 flex items-center">
       <div className="mx-auto w-full">
         <div className="text-center mb-4 sm:mb-5 md:mb-6 lg:mb-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
-            <span className="text-[#207755]">Start Your Treatment</span>{' '}
+          <h1 className="text-xl sm:text-2xl md:text-3xl text-center text-[#147140]">
+            <span className="text-[#207755] font-bold">Start Your Treatment</span>{' '}
             <span className="text-[#207755] font-normal">Today</span>
           </h1>
           <p className="text-gray-600 text-xs sm:text-sm md:text-base mt-1">Choose your personalized treatment plan</p>
@@ -144,7 +144,7 @@ export default function TreatmentSelector() {
               <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-white opacity-5 rounded-full -mr-12 sm:-mr-16 -mt-12 sm:-mt-16"></div>
               <div className="absolute bottom-0 left-0 w-20 h-20 sm:w-24 sm:h-24 bg-white opacity-5 rounded-full -ml-10 sm:-ml-12 -mb-10 sm:-mb-12"></div>
               <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white text-center relative z-10">
-                Comprehensive Plan
+                Comprehensive <span className='font-normal'>Plan</span>
               </h2>
               <p className="text-emerald-50 text-center text-xs sm:text-sm mt-0.5 sm:mt-1 relative z-10">Personalized treatment journey</p>
             </div>
@@ -328,7 +328,7 @@ export default function TreatmentSelector() {
             <div className="p-3 sm:p-4 md:p-5 lg:p-6 border-t border-gray-100 shrink-0 flex justify-center">
               <button
                 className="rounded-full bg-[#147140] hover:from-emerald-700 hover:via-teal-700 hover:to-[#207755]
-    text-white font-bold py-2 sm:py-2.5 md:py-3 px-6 sm:px-8 md:px-10
+    text-white font-normal py-2 sm:py-2.5 md:py-3 px-6 sm:px-8 md:px-10
     transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]
     text-xs sm:text-sm md:text-base"
                 onClick={handleStartTreatment}
@@ -351,13 +351,14 @@ export default function TreatmentSelector() {
                 <span className="font-bold">Personal</span>{' '}
                 <span className="font-normal">Consultations</span>
               </h2>
-              <p className="text-black text-xs sm:text-sm md:text-base mt-0.5 sm:mt-1">
-                Looking for expert care in your vicinity? Look no further.
-              </p>
+            <p className="text-black text-xs sm:text-sm md:text-base mt-0.5 sm:mt-1 whitespace-nowrap">
+  Looking for expert care in your vicinity? Look no further.
+</p>
+
             </div>
 
             <div className="absolute bottom-3  sm:bottom-4 md:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 px-3 sm:px-4 w-full flex justify-center z-10">
-              <button className="bg-[#147140] rounded-full hover:bg-emerald-700 text-white font-semibold py-2 sm:py-2.5 md:py-3 px-4 sm:px-5 md:px-6 transition-all duration-300 shadow-md hover:shadow-lg text-xs sm:text-sm md:text-base">
+              <button className="bg-[#147140] rounded-full font-normal hover:bg-emerald-700 text-white  py-2 sm:py-2.5 md:py-3 px-4 sm:px-5 md:px-6 transition-all duration-300 shadow-md hover:shadow-lg text-xs sm:text-sm md:text-base">
                 Book an Appointment
               </button>
             </div>

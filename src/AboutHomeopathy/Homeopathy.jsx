@@ -110,7 +110,7 @@ const Homeopathy = () => {
 
         {/* HISTORY SECTION */}
         <div className="bg-gray-100 py-10 sm:py-12 lg:py-16 px-5 sm:px-8 lg:px-12">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#207755] text-center mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#207755] text-center mb-4 sm:mb-6">
             History
           </h2>
 
@@ -129,7 +129,7 @@ const Homeopathy = () => {
 
       <section>
         <div className="w-full px-5 sm:px-8 lg:px-12 xl:px-16 py-10 sm:py-12 lg:py-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-[#207755] mb-8 sm:mb-10 lg:mb-12">
+          <h2 className="ttext-xl sm:text-2xl md:text-3xl font-bold text-center text-[#207755] mb-8 sm:mb-10 lg:mb-12">
             Core Principles
           </h2>
 
@@ -166,7 +166,7 @@ const Homeopathy = () => {
 
           </div>
           <div className="relative z-10 px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-16">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-white mb-10 sm:mb-12 lg:mb-16">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-white mb-10 sm:mb-12 lg:mb-16">
               Forms of <span className="font-normal">Homeopathic</span> Medicine
             </h2>
             <div className="hidden lg:block w-full">
@@ -244,7 +244,7 @@ p-3 lg:p-4 shadow-lg flex flex-col justify-center">
 
       {/* Left Content */}
       <div className="space-y-4 sm:space-y-5 lg:space-y-6">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#207755]">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#207755]">
           <span className='font-bold'>Why Choose</span> 
           <span className="text-[#207755] font-normal"> Homeopathy</span>
         </h2>
@@ -291,7 +291,7 @@ p-3 lg:p-4 shadow-lg flex flex-col justify-center">
 
             {/* Right Content */}
             <div className="space-y-4 sm:space-y-5 lg:space-y-6">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#207755]">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#207755]">
                 In Short
               </h2>
 

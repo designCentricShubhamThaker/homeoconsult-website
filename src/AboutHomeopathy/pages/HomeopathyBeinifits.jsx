@@ -47,7 +47,7 @@ export default function HomeopathyBenefits() {
     <div className=" bg-gray-100 py-10 sm:py-12 lg:py-16 px-5 sm:px-8 lg:px-12 xl:px-16 flex items-center">
       <div className="w-full">
         {/* Heading */}
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-center mb-8 sm:mb-10 lg:mb-12">
+        <h1 className="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl font-bold text-center mb-8 sm:mb-10 lg:mb-12">
           <span className="text-[#207755] font-bold">Benefits of</span>{" "}
           <span className="text-[#207755] font-normal">Homeopathy</span>
         </h1>

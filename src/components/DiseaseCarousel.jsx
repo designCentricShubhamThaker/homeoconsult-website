@@ -17,7 +17,7 @@ const DiseaseCarousel = () => {
   const containerRef = useRef(null);
 
   // Configuration
-  const API_URL = 'https://lorinda-remotest-kase.ngrok-free.dev/disease-cards';
+  const API_URL = 'http://localhost:8000/disease-cards';
   const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/disease-cards/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;

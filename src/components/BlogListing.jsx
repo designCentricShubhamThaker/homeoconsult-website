@@ -13,7 +13,7 @@ export default function BlogListing() {
   const reconnectAttemptsRef = useRef(0);
 
 
-  const API_URL = 'https://lorinda-remotest-kase.ngrok-free.dev/blogs';
+  const API_URL = 'http://localhost:8000/blogs';
   const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/blogs/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
@@ -233,8 +233,8 @@ export default function BlogListing() {
     <div className=" bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className=" mx-auto">
         <div className="flex flex-col items-center mb-5">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-4">
-            <span className="text-[#207755]">Latest</span>{' '}
+          <h1 className="text-xl sm:text-2xl md:text-3xl text-center mb-4">
+            <span className="text-[#207755] font-bold">Latest</span>{' '}
             <span className="text-[#207755] font-normal">Blogs</span>
           </h1>
 

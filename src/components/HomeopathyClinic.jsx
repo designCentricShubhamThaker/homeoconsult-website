@@ -172,7 +172,7 @@ return (
       transition={{ duration: 0.6 }}
       className="text-center mb-6 sm:mb-8 md:mb-10"
     >
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+      <h1 className="text-xl sm:text-2xl md:text-3xl text-center text-[#147140] font-bold">
         <span className="text-[#147140]">Best Homeopathy Clinic</span>{' '}
         <span className="text-[#147140] font-normal">in India</span>
       </h1>

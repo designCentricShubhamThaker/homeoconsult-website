@@ -65,7 +65,7 @@ export default function KeyTeamMembers() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12"
+        className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12"
       >
         <span className="text-[#207755] font-bold">Key</span>
         <span className="text-[#207755] font-normal"> Team Members</span>

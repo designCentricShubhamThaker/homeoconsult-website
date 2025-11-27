@@ -5,6 +5,9 @@ import AboutUs from "./AboutUs/AboutUs";
 import DiseaseSelection from "./AilmentsAndTreatments.jsx/DiseaseSelection";
 import Homeopathy from "./AboutHomeopathy/Homeopathy";
 
+import ServicePlan from "./Services/ServicePlan";
+import ComprehensivePlan from "./Services/Pages/ComprehensivePlan";
+
 
 function App() {
   return (
@@ -15,6 +18,8 @@ function App() {
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/ailments-and-treatments/:diseaseName" element={<DiseaseSelection />} />
         <Route path="/about-homeopathy" element={<Homeopathy />} />
+        <Route path="/services" element={<ServicePlan />} />
+        <Route path="/services/comprehensive-plan" element={<ComprehensivePlan />} />
       </Routes>
     </Router>
   );

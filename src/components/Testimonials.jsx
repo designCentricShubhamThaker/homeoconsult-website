@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const API_BASE_URL = 'https://lorinda-remotest-kase.ngrok-free.dev/testimonials';
+const API_BASE_URL = 'http://localhost:8000/testimonials';
 const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/testimonials/ws';
 
 export default function TestimonialDisplay() {
@@ -176,9 +176,9 @@ return (
 
           {/* Testimonials Section */}
           <div className="flex flex-col gap-2 sm:gap-2.5 md:gap-3">
-            {/* Testimonials Cards - Same Height as Image */}
+            {/* Testimonials Cards - Single column on mobile, grid on larger screens */}
             <div className="h-[220px] sm:h-[250px] md:h-[280px] lg:h-[320px] xl:h-[360px]">
-              <div className={`grid ${hasOnlyOne ? 'grid-cols-1' : 'grid-cols-1'} ${!hasOnlyOne ? 'sm:grid-cols-2' : ''} gap-2.5 sm:gap-3 md:gap-4 h-full`}>
+              <div className={`grid grid-cols-1 md:grid-cols-${hasOnlyOne ? '1' : '2'} gap-2.5 sm:gap-3 md:gap-4 h-full`}>
                 <div
                   key={`testimonial-${testimonial1.id}-${currentTestimonialIndex}`}
                   className="bg-white/85 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-3.5 md:p-4 flex flex-col transition-all duration-700 h-full"
@@ -208,7 +208,7 @@ return (
                 {testimonial2 && (
                   <div
                     key={`testimonial-${testimonial2.id}-${currentTestimonialIndex}`}
-                    className="bg-white/85 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-3.5 md:p-4 flex flex-col transition-all duration-700 h-full"
+                    className="bg-white/85 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-3.5 md:p-4 flex-col transition-all duration-700 h-full hidden md:flex"
                     style={{
                       animation: 'slideInRight 0.7s ease-out 0.1s'
                     }}

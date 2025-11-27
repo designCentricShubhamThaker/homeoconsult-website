@@ -61,7 +61,7 @@ const MilestonesTimeline = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="absolute top-4 md:top-6 lg:top-8 xl:top-10 left-0 right-0 text-center"
       >
-        <h1 className="text-white text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide">Milestones</h1>
+        <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-bold tracking-wide">Milestones</h1>
       </motion.div>
 
       <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32">
@@ -253,14 +253,7 @@ const MilestonesTimeline = () => {
         className="absolute top-1/2 -translate-y-1/2"
         style={{ left: 'clamp(20px, 3vw, 80px)' }}
       >
-        <svg style={{ width: 'clamp(70px, 8vw, 140px)', height: 'clamp(160px, 18vw, 320px)' }} viewBox="0 0 140 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="70" cy="45" rx="28" ry="32" fill="rgba(0,0,0,0.4)"/>
-          <rect x="48" y="77" width="44" height="85" rx="12" fill="rgba(0,0,0,0.4)"/>
-          <rect x="30" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
-          <rect x="88" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
-          <rect x="53" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
-          <rect x="73" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
-        </svg>
+       
       </motion.div>
 
       <motion.div 
@@ -270,14 +263,7 @@ const MilestonesTimeline = () => {
         className="absolute top-1/2 -translate-y-1/2"
         style={{ right: 'clamp(20px, 3vw, 80px)' }}
       >
-        <svg style={{ width: 'clamp(70px, 8vw, 140px)', height: 'clamp(160px, 18vw, 320px)' }} viewBox="0 0 140 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="70" cy="45" rx="28" ry="32" fill="rgba(0,0,0,0.4)"/>
-          <rect x="48" y="77" width="44" height="85" rx="12" fill="rgba(0,0,0,0.4)"/>
-          <rect x="30" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
-          <rect x="88" y="82" width="22" height="65" rx="11" fill="rgba(0,0,0,0.4)"/>
-          <rect x="53" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
-          <rect x="73" y="162" width="14" height="110" rx="7" fill="rgba(0,0,0,0.4)"/>
-        </svg>
+        
       </motion.div>
     </div>
 
