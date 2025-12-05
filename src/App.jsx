@@ -7,6 +7,16 @@ import Homeopathy from "./AboutHomeopathy/Homeopathy";
 
 import ServicePlan from "./Services/ServicePlan";
 import ComprehensivePlan from "./Services/Pages/ComprehensivePlan";
+import CuredCasesGallery from "./CuredCases/CuredCaseGallery";
+import HomeopathyFAQ from "./FAQ/HomeopathyFAQ";
+import ConsumerHealthFAQ from "./FAQ/ConsumerHealthFAQ";
+import ContactUsForm from "./ContactUs/ContactUsForm";
+import DoctorSec from "./DoctorsSection.jsx/DoctorSec";
+import TestimonialDisplay from "./components/Testimonials";
+import AllTestimonails from "./Testimonials/AllTestimonails";
+import BlogSection from "./Blogs/BlogSection";
+import DisclaimerComponent from "./components/Disclaimer";
+
 
 
 function App() {
@@ -19,6 +29,14 @@ function App() {
         <Route path="/ailments-and-treatments/:diseaseName" element={<DiseaseSelection />} />
         <Route path="/about-homeopathy" element={<Homeopathy />} />
         <Route path="/services" element={<ServicePlan />} />
+        <Route path="/cured-cases" element={<CuredCasesGallery />} />
+        <Route path="/faq's" element={<HomeopathyFAQ />} /> 
+        <Route path="/testimonials" element={<AllTestimonails />} /> 
+        <Route path="/ContactUs" element={<ContactUsForm />} /> 
+        <Route path="/blogs" element={<BlogSection />} /> 
+        <Route path="/disclaimer" element={<DisclaimerComponent />} /> 
+        <Route path="/Doctors-section" element={<DoctorSec />} /> 
+        <Route path="/consumer-health-faq" element={<ConsumerHealthFAQ />} />
         <Route path="/services/comprehensive-plan" element={<ComprehensivePlan />} />
       </Routes>
     </Router>

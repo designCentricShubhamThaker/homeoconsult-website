@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Eye, Clock, ArrowRight, Wifi, WifiOff } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function BlogListing() {
   const [blogs, setBlogs] = useState([]);
@@ -12,16 +13,21 @@ export default function BlogListing() {
   const pollingIntervalRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
 
-
   const API_URL = 'http://localhost:8000/blogs';
   const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/blogs/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
   const POLLING_INTERVAL = 5000;
+  
+  const CACHE_KEY = 'blogs_cache';
+  const CACHE_TIMESTAMP_KEY = 'blogs_cache_timestamp';
+  const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
-  // Fetch initial blogs
+  const navigate = useNavigate();
+
+  // Fetch initial blogs with cache
   useEffect(() => {
-    console.log('🚀 Component mounted, fetching blogs...');
+    console.log('🚀 Component mounted, checking cache...');
     fetchBlogs();
   }, []);
 
@@ -68,12 +74,21 @@ export default function BlogListing() {
 
       ws.onmessage = (event) => {
         try {
-          const data = JSON.parse(event.data);
-          console.log('📨 WebSocket message:', data);
+          const message = JSON.parse(event.data);
+          console.log('📨 WebSocket message:', message);
 
-          if (['update', 'create', 'delete', 'connected'].includes(data.type)) {
-            console.log(`🔄 Refreshing blogs due to: ${data.type}`);
-            fetchBlogs();
+          // Handle blog updates
+          if (['new_blog', 'deleted_blog', 'updated_blog'].includes(message.type)) {
+            console.log(`🔄 Refreshing blogs due to: ${message.type}`);
+            fetchBlogs(true); // Force refresh from server
+            
+            if (message.type === 'new_blog') {
+              console.log('✨ New blog added');
+            } else if (message.type === 'updated_blog') {
+              console.log('🔄 Blog updated');
+            } else if (message.type === 'deleted_blog') {
+              console.log('🗑️ Blog deleted');
+            }
           }
         } catch (error) {
           console.error('❌ Error parsing WebSocket message:', error);
@@ -124,9 +139,29 @@ export default function BlogListing() {
     }
   };
 
-  const fetchBlogs = async () => {
+  const fetchBlogs = async (forceRefresh = false) => {
     try {
-      console.log('🔄 Fetching blogs from:', API_URL);
+      // 🔹 1. Check Cache (unless force refresh)
+      if (!forceRefresh) {
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+
+        if (cachedData && cacheTimestamp) {
+          const now = Date.now();
+          const cacheAge = now - parseInt(cacheTimestamp);
+
+          if (cacheAge < CACHE_DURATION) {
+            const parsedData = JSON.parse(cachedData);
+            console.log('📦 Loaded blogs from cache (age:', Math.round(cacheAge / 60000), 'minutes)');
+            setBlogs(parsedData.slice(0, 3));
+            setError(null);
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      console.log('🔄 Fetching fresh blogs from:', API_URL);
       const response = await fetch(API_URL, {
         method: 'GET',
         headers: {
@@ -149,7 +184,12 @@ export default function BlogListing() {
         return;
       }
 
-      setBlogs(data.slice(0, 3)); // Show only latest 3 blogs
+      // 🔹 2. Cache the fresh data
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+      console.log('💾 Cached fresh blog data');
+
+      setBlogs(data.slice(0, 3));
       setError(null);
       setLoading(false);
       console.log(`✅ Blogs set: ${data.length} blogs`);
@@ -160,6 +200,16 @@ export default function BlogListing() {
     } catch (err) {
       console.error('❌ Error fetching blogs:', err);
       setError(err.message);
+      
+      // 🔹 3. Fallback to stale cache on error
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      if (cachedData) {
+        console.log('📦 Using stale cache as fallback');
+        const parsedData = JSON.parse(cachedData);
+        setBlogs(parsedData.slice(0, 3));
+        setError(null);
+      }
+      
       setLoading(false);
 
       if (connectionStatus !== 'connected' && connectionStatus !== 'polling') {
@@ -184,10 +234,9 @@ export default function BlogListing() {
     return minutes;
   };
 
-
   if (loading) {
     return (
-      <div className=" bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold text-center mb-12">
             <span className="text-[#207755]">Latest</span>{' '}
@@ -212,13 +261,13 @@ export default function BlogListing() {
 
   if (error) {
     return (
-      <div className=" bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <p className="text-red-600 font-semibold mb-2">Error loading blogs</p>
             <p className="text-red-500 text-sm">{error}</p>
             <button
-              onClick={fetchBlogs}
+              onClick={() => fetchBlogs(true)}
               className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Try Again
@@ -230,19 +279,15 @@ export default function BlogListing() {
   }
 
   return (
-    <div className=" bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className=" mx-auto">
+    <div className="bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto">
         <div className="flex flex-col items-center mb-5">
           <h1 className="text-xl sm:text-2xl md:text-3xl text-center mb-4">
             <span className="text-[#207755] font-bold">Latest</span>{' '}
             <span className="text-[#207755] font-normal">Blogs</span>
           </h1>
-
-          {/* Connection Status Badge */}
-
         </div>
 
-        {/* Blog Grid */}
         {blogs.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No blogs available yet.</p>
@@ -254,7 +299,6 @@ export default function BlogListing() {
                 key={blog.id}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
               >
-                {/* Blog Image */}
                 <div className="relative w-full h-56 overflow-hidden bg-gray-200">
                   {blog.image ? (
                     <img
@@ -275,7 +319,6 @@ export default function BlogListing() {
                   )}
                 </div>
 
-                {/* Blog Content */}
                 <div className="p-6 flex flex-col grow">
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 line-clamp-2 hover:text-green-600 transition-colors cursor-pointer">
                     {blog.title}
@@ -285,7 +328,6 @@ export default function BlogListing() {
                     {blog.description}
                   </p>
 
-                  {/* Meta Info */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100 text-xs sm:text-sm">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1 text-gray-500">
@@ -309,15 +351,20 @@ export default function BlogListing() {
           </div>
         )}
 
-        {/* View All Button */}
+        
+
         {blogs.length > 0 && (
-          <div className="flex justify-end mt-8">
-            <button className="flex items-center gap-2 text-green-600 font-semibold hover:text-green-700 transition-colors group">
-              <span>View All</span>
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
-        )}
+  <div className="flex justify-end mt-8">
+    <button
+      onClick={() => navigate('/blogs')}
+      className="flex items-center gap-2 text-green-600 font-semibold hover:text-green-700 transition-colors group"
+    >
+      <span>View All</span>
+      <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+    </button>
+  </div>
+)}
+
       </div>
     </div>
   );

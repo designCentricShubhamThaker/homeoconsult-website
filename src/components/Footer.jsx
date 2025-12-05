@@ -1,7 +1,10 @@
 import React from 'react';
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
+import { NavLink } from "react-router-dom";
 
 export default function Footer() {
+
+
   return (
     <footer className="bg-[#207755] text-white">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -62,12 +65,13 @@ export default function Footer() {
             {/* Resources */}
             <div className="bg-[#1a6548] p-3 rounded min-h-[100px] flex flex-col">
               <h3 className="font-bold text-xs mb-2">Resources</h3>
-              <ul className="text-[10px]  leading-relaxed space-y-1 grow">
-                <li>Doctor Section</li>
-                <li>Health Talks</li>
-                <li>Blogs</li>
-                <li>Brochure</li>
+              <ul className="text-[10px] leading-relaxed space-y-1 grow">
+                <li><NavLink to="/doctor-section">Doctor Section</NavLink></li>
+                <li><NavLink to="/consumer-health-faq">Consumer Health</NavLink></li>
+                <li><NavLink to="/blogs">Blogs</NavLink></li>
+                <li><NavLink to="/brochure">Brochure</NavLink></li>
               </ul>
+
             </div>
           </div>
 
@@ -97,12 +101,13 @@ export default function Footer() {
 
           <div className="col-span-1">
             <h3 className="font-bold text-base mb-3">Resources</h3>
-            <ul className="space-y-2 text-sm text-green-100">
-              <li>Doctor Section</li>
-              <li>Upcoming Health Talks</li>
-              <li>Blogs</li>
-              <li>Download Brochure</li>
+            <ul className="text-sm leading-relaxed space-y-1 grow">
+              <li><NavLink to="/doctors-section">Doctor Section</NavLink></li>
+              <li><NavLink to="/consumer-health-faq">Consumer Health</NavLink></li>
+              <li><NavLink to="/blogs">Blogs</NavLink></li>
+              <li><NavLink to="/brochure">Brochure</NavLink></li>
             </ul>
+
           </div>
 
           <div className="col-span-1">
@@ -142,18 +147,13 @@ export default function Footer() {
             <p className="text-sm text-green-100">+91 9820190203</p>
           </div>
         </div>
-
       </div>
-
-      {/* BOTTOM BAR */}
       <div className="bg-[#1c6a4c] py-3 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
-
-          {/* MOBILE */}
           <div className="flex flex-col items-center text-center gap-2 text-[11px] text-green-100 sm:hidden">
             <p>© 2025 HomeOconsult R&D. All rights reserved.</p>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-white transition">Disclaimer</a>
+              <li><NavLink to="/disclaimer">Disclaimer</NavLink></li>
               <a href="#" className="hover:text-white transition">Privacy Policy</a>
               <a href="#" className="hover:text-white transition">Cookies Policy</a>
             </div>
@@ -162,7 +162,7 @@ export default function Footer() {
           {/* DESKTOP */}
           <div className="hidden sm:flex items-center justify-between text-xs text-green-100">
             <div className="flex gap-4">
-              <a href="#" className="hover:text-white transition">Disclaimer</a>
+                  <li><NavLink to="/disclaimer">Disclaimer</NavLink></li>
               <a href="#" className="hover:text-white transition">Privacy Policy</a>
               <a href="#" className="hover:text-white transition">Cookies Policy</a>
             </div>

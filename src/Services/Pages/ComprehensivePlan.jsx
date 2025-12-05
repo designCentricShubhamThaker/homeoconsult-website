@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Search, X, Check, MapPin, Calendar, CreditCard, User, Phone, Mail, Home, FileText } from 'lucide-react';
 import Layout from '../../Layout/Layout'
+import { useLocation } from 'react-router-dom';
 
 const DISEASES = [
   "ACNE", "Adenoids", "ADHD", "Alopecia areata", "Ankylosing Spondilitis",
@@ -16,6 +17,13 @@ const DISEASES = [
   "Trigeminal Neuralgia", "Ulcerative Colitis/Crohns", "Urticaria/Hives",
   "Vasculitis", "Vitiligo", "Vocal Cord Nodule", "Warts / Corns", "Not Listed"
 ];
+
+// Cache Configuration
+const API_URL = 'http://localhost:8000/packages';
+const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/packages/ws';
+const CACHE_KEY = 'packages_cache_comprehensive';
+const CACHE_TIMESTAMP_KEY = 'packages_cache_comprehensive_timestamp';
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
 export default function ComprehensivePlan() {
   const [packages, setPackages] = useState([]);
@@ -44,71 +52,305 @@ export default function ComprehensivePlan() {
   const [showAdditionalDropdown, setShowAdditionalDropdown] = useState(false);
   const [additionalSearch, setAdditionalSearch] = useState('');
 
-  const [paymentType, setPaymentType] = useState('');
-  const [contactShippingInfo, setContactShippingInfo] = useState('');
-  const [billingInfo, setBillingInfo] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
 
+  const location = useLocation();
+  const preFillData = location.state?.treatmentData;
+  const formRef = useRef(null);
+  const hasPreFilledRef = useRef(false);
+  const wsRef = useRef(null);
+
+  // Razorpay script loading
   useEffect(() => {
-    fetchPackages();
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => {
+      console.log('Razorpay script loaded successfully');
+    };
+    script.onerror = () => {
+      console.error('Failed to load Razorpay script');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
   }, []);
 
-  const fetchPackages = async () => {
+  // Fetch packages on mount and setup WebSocket
+  useEffect(() => {
+    console.log('🚀 ComprehensivePlan mounted, checking cache...');
+    fetchPackages();
+    connectWebSocket();
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, []);
+
+  // WebSocket connection
+  const connectWebSocket = () => {
     try {
-      const response = await fetch(
-        'http://localhost:8000/packages',
-        {
-          method: 'GET',
-          headers: {
-            'ngrok-skip-browser-warning': 'true',
-            'Content-Type': 'application/json',
-          },
+      const ws = new WebSocket(WS_URL);
+
+      ws.onopen = () => {
+        console.log('✅ WebSocket connected - Comprehensive Plan Packages');
+      };
+
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('📨 WebSocket message - Comprehensive Plan:', message);
+
+        if (['new_package', 'updated_package', 'deleted_package'].includes(message.type)) {
+          console.log('🔄 Refreshing packages due to:', message.type);
+          fetchPackages(true); // Force refresh
         }
-      );
+      };
+
+      ws.onerror = (error) => {
+        console.error('❌ WebSocket error - Comprehensive Plan:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('🔌 WebSocket disconnected - Comprehensive Plan, reconnecting...');
+        setTimeout(connectWebSocket, 3000);
+      };
+
+      wsRef.current = ws;
+    } catch (error) {
+      console.error('❌ Failed to create WebSocket - Comprehensive Plan:', error);
+    }
+  };
+
+  // Fetch packages with caching
+  const fetchPackages = async (forceRefresh = false) => {
+    try {
+      // 🔹 1. Check Cache (unless force refresh)
+      if (!forceRefresh) {
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+
+        if (cachedData && cacheTimestamp) {
+          const now = Date.now();
+          const cacheAge = now - parseInt(cacheTimestamp);
+
+          if (cacheAge < CACHE_DURATION) {
+            const parsedData = JSON.parse(cachedData);
+            console.log('📦 Loaded packages from cache (age:', Math.round(cacheAge / 60000), 'minutes)');
+            setPackages(parsedData);
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      console.log('🔄 Fetching fresh packages from:', API_URL);
+      const response = await fetch(API_URL, {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json',
+        },
+      });
+
       const data = await response.json();
+
+      // 🔹 2. Cache the fresh data
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+      console.log('💾 Cached fresh package data');
+
       setPackages(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching packages:', error);
+      console.error('❌ Error fetching packages:', error);
+
+      // 🔹 3. Fallback to stale cache on error
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      if (cachedData) {
+        console.log('📦 Using stale cache as fallback');
+        setPackages(JSON.parse(cachedData));
+      }
+
       setLoading(false);
     }
   };
 
+  // NEW: Fetch regions when primary disease changes (manual selection)
   useEffect(() => {
-    if (primaryDisease && packages.length > 0) {
+    if (primaryDisease && packages.length > 0 && !hasPreFilledRef.current) {
+      console.log('🔄 Manual disease selection, fetching regions for:', primaryDisease);
       const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
       if (comprehensivePlan && comprehensivePlan.regions) {
         const matchingRegions = comprehensivePlan.regions.filter(r => r.disease === primaryDisease);
         const regions = [...new Set(matchingRegions.map(r => r.location))];
+
         setPrimaryAvailableRegions(regions);
-        if (regions.length > 0 && !primaryRegion) {
-          setPrimaryRegion(regions[0]);
-        }
+        setPrimaryRegion(''); // Reset region when disease changes
+        setPrimaryTerm(''); // Reset term when disease changes
+        setPrimaryAvailableTerms([]);
+        setPrimaryPriceInfo(null);
+
+        console.log('✅ Available regions:', regions);
       }
     }
   }, [primaryDisease, packages]);
 
+  // NEW: Fetch terms when primary region changes (manual selection)
   useEffect(() => {
-    if (primaryDisease && primaryRegion && packages.length > 0) {
+    if (primaryDisease && primaryRegion && packages.length > 0 && !hasPreFilledRef.current) {
+      console.log('🔄 Manual region selection, fetching terms for:', primaryDisease, primaryRegion);
       const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
       if (comprehensivePlan && comprehensivePlan.regions) {
         const regionData = comprehensivePlan.regions.find(
           r => r.disease === primaryDisease && r.location === primaryRegion
         );
+
         if (regionData) {
           const terms = regionData.duration_months.map((months, idx) => ({
             months,
             price: regionData.prices[idx],
             currency: regionData.currency
           }));
-          setPrimaryAvailableTerms(terms);
 
-          if (terms.length > 0 && !primaryTerm) {
-            setPrimaryTerm(terms[0].months.toString());
-          }
+          setPrimaryAvailableTerms(terms);
+          setPrimaryTerm(''); // Reset term when region changes
+          setPrimaryPriceInfo(null);
+
+          console.log('✅ Available terms:', terms);
         }
       }
     }
-  }, [primaryDisease, primaryRegion, packages]);
+  }, [primaryRegion, primaryDisease, packages]);
+
+  const fetchRegionsForDiseaseOnly = (disease, region, index) => {
+    if (packages.length > 0) {
+      const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
+      if (comprehensivePlan && comprehensivePlan.regions) {
+        const matchingRegions = comprehensivePlan.regions.filter(r => r.disease === disease);
+        const regions = [...new Set(matchingRegions.map(r => r.location))];
+
+        const regionData = comprehensivePlan.regions.find(
+          r => r.disease === disease && r.location === region
+        );
+
+        const terms = regionData ? regionData.duration_months.map((months, idx) => ({
+          months,
+          price: regionData.prices[idx],
+          currency: regionData.currency
+        })) : [];
+
+        setAdditionalDiseases(prev => {
+          const updated = [...prev];
+          if (updated[index]) {
+            updated[index].availableRegions = regions;
+            updated[index].region = region;
+            updated[index].availableTerms = terms;
+            updated[index].term = "";
+            updated[index].priceInfo = null;
+          }
+          return updated;
+        });
+      }
+    }
+  };
+
+  // PREFILL LOGIC
+  useEffect(() => {
+    if (hasPreFilledRef.current) {
+      console.log('Already pre-filled, skipping...');
+      return;
+    }
+
+    if (preFillData && packages.length > 0) {
+      hasPreFilledRef.current = true;
+
+      if (preFillData.primaryDisease) {
+        console.log('Setting primary disease:', preFillData.primaryDisease);
+        const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
+        if (comprehensivePlan && comprehensivePlan.regions) {
+          const matchingRegions = comprehensivePlan.regions.filter(
+            r => r.disease.toLowerCase() === preFillData.primaryDisease.toLowerCase()
+          );
+
+          const regions = [...new Set(matchingRegions.map(r => r.location))];
+          if (preFillData.region && regions.includes(preFillData.region)) {
+            const regionData = comprehensivePlan.regions.find(
+              r => r.disease.toLowerCase() === preFillData.primaryDisease.toLowerCase() &&
+                r.location === preFillData.region
+            );
+
+            if (regionData) {
+              const terms = regionData.duration_months.map((months, idx) => ({
+                months,
+                price: regionData.prices[idx],
+                currency: regionData.currency
+              }));
+
+              if (preFillData.term) {
+                const termInfo = terms.find(t => t.months === parseInt(preFillData.term));
+                console.log('Term info found:', termInfo);
+                setPrimaryDisease(preFillData.primaryDisease);
+                setPrimaryAvailableRegions(regions);
+                setPrimaryRegion(preFillData.region);
+                setPrimaryAvailableTerms(terms);
+                setPrimaryTerm(preFillData.term.toString());
+                if (termInfo) {
+                  setPrimaryPriceInfo(termInfo);
+                }
+              }
+            }
+          }
+        }
+      }
+      if (preFillData.paymentMethod) {
+        setPaymentMethod(preFillData.paymentMethod);
+      }
+
+      if (preFillData.secondaryDiseases && preFillData.secondaryDiseases.length > 0) {
+        console.log('Setting secondary diseases:', preFillData.secondaryDiseases);
+        const additionalDiseasesData = preFillData.secondaryDiseases.map(disease => ({
+          disease,
+          region: preFillData.region,
+          term: "",
+          availableRegions: [],
+          availableTerms: [],
+          priceInfo: null
+        }));
+        setAdditionalDiseases(additionalDiseasesData);
+
+        setTimeout(() => {
+          additionalDiseasesData.forEach((_, index) => {
+            fetchRegionsForDiseaseOnly(preFillData.secondaryDiseases[index], preFillData.region, index);
+          });
+        }, 200);
+      }
+
+      setTimeout(() => {
+        if (formRef.current) {
+          formRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 300);
+    }
+  }, [preFillData, packages]);
+
+  useEffect(() => {
+    if (preFillData?.secondaryDiseases && packages.length > 0 && additionalDiseases.length > 0) {
+      additionalDiseases.forEach((disease, index) => {
+        if (disease.availableTerms.length === 0 && disease.region) {
+          fetchRegionsForDiseaseOnly(disease.disease, disease.region, index);
+        }
+      });
+    }
+  }, [packages]);
 
   useEffect(() => {
     if (primaryTerm && primaryAvailableTerms.length > 0) {
@@ -162,7 +404,7 @@ export default function ComprehensivePlan() {
     }
   };
 
-  const fetchTermsForDisease = (disease, region, index) => {
+  const fetchTermsForDisease = (disease, region, index, autoSelect = true) => {
     if (packages.length > 0) {
       const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
       if (comprehensivePlan && comprehensivePlan.regions) {
@@ -180,7 +422,7 @@ export default function ComprehensivePlan() {
             const updated = [...prev];
             if (updated[index]) {
               updated[index].availableTerms = terms;
-              if (terms.length > 0) {
+              if (autoSelect && terms.length > 0) {
                 updated[index].term = terms[0].months.toString();
                 updated[index].priceInfo = terms[0];
               }
@@ -190,17 +432,6 @@ export default function ComprehensivePlan() {
         }
       }
     }
-  };
-
-  const updateAdditionalDiseaseRegion = (index, region) => {
-    setAdditionalDiseases(prev => {
-      const updated = [...prev];
-      updated[index].region = region;
-      updated[index].term = '';
-      updated[index].priceInfo = null;
-      fetchTermsForDisease(updated[index].disease, region, index);
-      return updated;
-    });
   };
 
   const updateAdditionalDiseaseTerm = (index, term) => {
@@ -232,55 +463,225 @@ export default function ComprehensivePlan() {
       alert('Please complete primary disease information');
       return false;
     }
-    if (!paymentType || !contactShippingInfo || !billingInfo) {
+    if (!paymentMethod) {
       alert('Please fill all required payment fields');
       return false;
     }
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
+    let totalPrice = primaryPriceInfo?.price || 0;
+    additionalDiseases.forEach(d => {
+      if (d.priceInfo?.price) {
+        totalPrice += d.priceInfo.price;
+      }
+    });
+
     const formData = {
-      personalInfo: {
-        name,
-        email,
-        phone,
-        newPatient,
-        currentCaseNo
-      },
-      address: {
-        countryRegion,
-        stateProvince,
-        city,
-        zipPostalCode
-      },
-      primaryDisease: {
-        disease: primaryDisease,
-        otherDisease,
-        region: primaryRegion,
-        term: primaryTerm,
-        priceInfo: primaryPriceInfo
-      },
-      additionalDiseases: additionalDiseases.map(d => ({
+      name,
+      email,
+      phone,
+      is_new_patient: newPatient === 'yes',
+      current_case_no: currentCaseNo || null,
+      country_or_region: countryRegion,
+      state: stateProvince,
+      city,
+      zip_code: zipPostalCode || null,
+      treatment_for: primaryDisease,
+      other_disease: primaryDisease === 'Not Listed' ? otherDisease : null,
+      primary_disease_region: primaryRegion,
+      primary_disease_term: primaryTerm,
+      additional_diseases: additionalDiseases.map(d => ({
         disease: d.disease,
         region: d.region,
         term: d.term,
         priceInfo: d.priceInfo
       })),
-      payment: {
-        paymentType,
-        contactShippingInfo,
-        billingInfo
-      }
+      price: totalPrice,
+      currency: primaryPriceInfo?.currency || 'USD',
+      duration_of_treatment: `${primaryTerm} months`,
+      payment_type: paymentMethod
     };
-    console.log('Comprehensive Plan Submission:', formData);
-    alert('Form submitted! Check console for details.');
+
+    console.log('Submitting form data:', formData);
+
+    try {
+      const orderResponse = await fetch('http://localhost:8000/orders/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json();
+        throw new Error(errorData.detail || 'Failed to submit order');
+      }
+
+      const orderResult = await orderResponse.json();
+
+      const onlinePaymentMethods = ['credit_card', 'debit_card', 'upi', 'netbanking', 'card', 'online'];
+
+      if (onlinePaymentMethods.includes(paymentMethod.toLowerCase().replace(/\s+/g, '_'))) {
+        console.log('Initiating Razorpay payment for order:', orderResult.id);
+        await initiateRazorpayPayment(orderResult.id, formData);
+      } else {
+        alert('Order submitted successfully! Order ID: ' + orderResult.id + '\nPayment method: ' + paymentMethod);
+        resetForm();
+      }
+
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      alert('Failed to submit order: ' + error.message);
+    }
+  };
+
+  const initiateRazorpayPayment = async (orderId, orderData) => {
+    try {
+      console.log('Creating Razorpay order for orderId:', orderId);
+      if (typeof window.Razorpay === 'undefined') {
+        throw new Error('Razorpay SDK not loaded. Please refresh the page and try again.');
+      }
+      const createOrderResponse = await fetch('http://localhost:8000/payments/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: orderData.price,
+          currency: orderData.currency,
+          order_id: orderId,
+          email: orderData.email,
+          contact: orderData.phone,
+          notes: {
+            treatment_for: orderData.treatment_for,
+            duration: orderData.duration_of_treatment
+          }
+        })
+      });
+
+      if (!createOrderResponse.ok) {
+        const errorData = await createOrderResponse.json();
+        throw new Error(errorData.detail || 'Failed to create payment order');
+      }
+
+      const razorpayOrder = await createOrderResponse.json();
+      const options = {
+        key: razorpayOrder.key_id,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: 'Your Healthcare Company',
+        description: `Treatment for ${orderData.treatment_for}`,
+        image: '/your-logo.png',
+        order_id: razorpayOrder.razorpay_order_id,
+
+        prefill: {
+          name: orderData.name,
+          email: orderData.email,
+          contact: orderData.phone
+        },
+
+        theme: {
+          color: '#3399cc'
+        },
+
+        handler: async function (response) {
+          console.log('Payment successful:', response);
+
+          try {
+            const verifyResponse = await fetch('http://localhost:8000/payments/verify', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                order_id: orderId
+              })
+            });
+
+            if (!verifyResponse.ok) {
+              const errorData = await verifyResponse.json();
+              throw new Error(errorData.detail || 'Payment verification failed');
+            }
+
+            const verifyResult = await verifyResponse.json();
+            console.log('Payment verified:', verifyResult);
+
+            alert(`Payment successful! 
+Order ID: ${orderId}
+Payment ID: ${response.razorpay_payment_id}
+Your treatment plan has been confirmed.`);
+
+            resetForm();
+
+          } catch (error) {
+            console.error('Error verifying payment:', error);
+            alert('Payment completed but verification failed. Please contact support with Order ID: ' + orderId);
+          }
+        },
+
+        modal: {
+          ondismiss: function () {
+            console.log('Payment modal closed');
+            alert('Payment cancelled. Your order is saved and you can complete payment later.');
+          }
+        }
+      };
+      const razorpay = new window.Razorpay(options);
+
+      razorpay.on('payment.failed', function (response) {
+        console.error('Payment failed:', response.error);
+        alert(`Payment failed: ${response.error.description}`);
+      });
+
+      razorpay.open();
+
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      alert('Failed to initiate payment: ' + error.message);
+    }
+  };
+
+  const resetForm = () => {
+    setName('');
+    setEmail('');
+    setPhone('');
+    setNewPatient('');
+    setCurrentCaseNo('');
+    setCountryRegion('');
+    setStateProvince('');
+    setCity('');
+    setZipPostalCode('');
+    setPrimaryDisease('');
+    setOtherDisease('');
+    setPrimaryRegion('');
+    setPrimaryTerm('');
+    setAdditionalDiseases([]);
+    setPaymentMethod('');
+    setPrimaryPriceInfo(null);
+    hasPreFilledRef.current = false; // Reset prefill flag
+  };
+
+  // NEW: Handle primary disease change - reset prefill flag if user manually changes
+  const handlePrimaryDiseaseChange = (disease) => {
+    if (hasPreFilledRef.current && disease !== primaryDisease) {
+      console.log('🔄 User manually changed disease, resetting prefill flag');
+      hasPreFilledRef.current = false;
+    }
+    setPrimaryDisease(disease);
+    setPrimaryRegion('');
+    setPrimaryTerm('');
   };
 
   return (
@@ -315,9 +716,9 @@ export default function ComprehensivePlan() {
         </div>
 
 
-        <div className="py-6 sm:py-8 px-4 sm:px-6 bg-cover " style={{ backgroundImage: "url('http://localhost:5173/contact.jpg')" }}>
+        <div className="py-6 sm:py-8 px-4 sm:px-6 bg-cover " ref={formRef} style={{ backgroundImage: "url('/contact.jpg')" }}>
           <div className="py-6 px-4  sm:px-6 lg:px-8  flex justify-center items-center ">
-            <div >
+            <div className="w-full max-w-4xl" >
               <div className="text-center mb-4">
                 <h2 className="text-2xl text-[#207755] mb-1">
                   <span className="font-semibold">Start Your </span>
@@ -356,13 +757,12 @@ export default function ComprehensivePlan() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:border-gray-400 focus:outline-none"
+                            className="w-full border-gray-300 rounded px-2 py-1.5 text-xs focus:border-gray-400 focus:outline-none"
                             required
                           />
                           <Mail className="absolute right-2 top-2 w-3 h-3 text-gray-400" />
                         </div>
                       </div>
-
                       <div>
                         <label className="block text-[11px] font-medium text-gray-600 mb-0.5">
                           Phone <span className="text-red-500">*</span>
@@ -487,11 +887,7 @@ export default function ComprehensivePlan() {
                         </label>
                         <select
                           value={primaryDisease}
-                          onChange={(e) => {
-                            setPrimaryDisease(e.target.value);
-                            setPrimaryRegion('');
-                            setPrimaryTerm('');
-                          }}
+                          onChange={(e) => handlePrimaryDiseaseChange(e.target.value)}
                           className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:border-gray-400 focus:outline-none"
                           required
                         >
@@ -617,7 +1013,7 @@ export default function ComprehensivePlan() {
                         ))}
                       </div>
 
-                   
+
                     </div>
                   </div>
                 </div>
@@ -630,8 +1026,8 @@ export default function ComprehensivePlan() {
                       Payment Method <span className="text-red-500">*</span>
                     </label>
                     <select
-                      value={paymentType}
-                      onChange={(e) => setPaymentType(e.target.value)}
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
                       className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:border-gray-400 focus:outline-none"
                       required
                     >
@@ -650,7 +1046,7 @@ export default function ComprehensivePlan() {
                     type="submit"
                     className="bg-[#207755] cursor-pointer hover:bg-[#1a6245] text-white font-semibold py-2 px-6 rounded-lg transition-colors flex items-center gap-2 text-sm"
                   >
-                   
+
                     Submit
                   </button>
                 </div>
@@ -674,7 +1070,7 @@ export default function ComprehensivePlan() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4  mx-auto">
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border-2 border-emerald-200">
+              <div className=" rounded-xl p-4 border-2 border-emerald-200">
                 <h3 className="text-lg font-bold text-[#207755] mb-3">Recommended for:</h3>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
@@ -688,7 +1084,7 @@ export default function ComprehensivePlan() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl p-4 border-2 border-teal-200">
+              <div className=" rounded-xl p-4 border-2 border-teal-200">
                 <h3 className="text-lg font-bold text-[#207755] mb-3">Includes</h3>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">

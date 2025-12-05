@@ -22,6 +22,11 @@ const DiseaseCarousel = () => {
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
   const POLLING_INTERVAL = 5000;
+  
+  // Cache Configuration
+  const CACHE_KEY = 'disease_cards_cache';
+  const CACHE_TIMESTAMP_KEY = 'disease_cards_cache_timestamp';
+  const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
   // Intersection Observer for visibility
   useEffect(() => {
@@ -47,7 +52,7 @@ const DiseaseCarousel = () => {
 
   // Fetch initial cards
   useEffect(() => {
-    console.log('🚀 Component mounted, fetching cards...');
+    console.log('🚀 Component mounted, checking cache...');
     fetchCards();
   }, []);
 
@@ -109,7 +114,7 @@ const DiseaseCarousel = () => {
       const ws = new WebSocket(WS_URL);
 
       ws.onopen = () => {
-        console.log('✅ WebSocket Connected');
+        console.log('✅ WebSocket Connected - Disease Cards');
         setConnectionStatus('connected');
         reconnectAttemptsRef.current = 0;
 
@@ -123,11 +128,11 @@ const DiseaseCarousel = () => {
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('📨 WebSocket message:', data);
+          console.log('📨 WebSocket message - Disease Cards:', data);
 
           if (['update', 'create', 'delete', 'connected'].includes(data.type)) {
             console.log(`🔄 Refreshing cards due to: ${data.type}`);
-            fetchCards();
+            fetchCards(true); // Force refresh from server
           }
         } catch (error) {
           console.error('❌ Error parsing WebSocket message:', error);
@@ -135,12 +140,12 @@ const DiseaseCarousel = () => {
       };
 
       ws.onerror = (error) => {
-        console.error('❌ WebSocket error:', error);
+        console.error('❌ WebSocket error - Disease Cards:', error);
         setConnectionStatus('error');
       };
 
       ws.onclose = (event) => {
-        console.log(`🔌 WebSocket disconnected: Code ${event.code}`);
+        console.log(`🔌 WebSocket disconnected - Disease Cards: Code ${event.code}`);
         setConnectionStatus('disconnected');
 
         wsRef.current = null;
@@ -160,7 +165,7 @@ const DiseaseCarousel = () => {
 
       wsRef.current = ws;
     } catch (error) {
-      console.error('❌ Failed to create WebSocket:', error);
+      console.error('❌ Failed to create WebSocket - Disease Cards:', error);
       setConnectionStatus('error');
       reconnectAttemptsRef.current++;
       fallbackToPolling();
@@ -178,9 +183,31 @@ const DiseaseCarousel = () => {
     }
   };
 
-  const fetchCards = async () => {
+  const fetchCards = async (forceRefresh = false) => {
     try {
-      console.log('🔄 Fetching cards from:', API_URL);
+      // 🔹 1. Check Cache (unless force refresh)
+      if (!forceRefresh) {
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+
+        if (cachedData && cacheTimestamp) {
+          const now = Date.now();
+          const cacheAge = now - parseInt(cacheTimestamp);
+
+          if (cacheAge < CACHE_DURATION) {
+            const parsedData = JSON.parse(cachedData);
+            console.log('📦 Loaded disease cards from cache (age:', Math.round(cacheAge / 60000), 'minutes)');
+            setCards(parsedData);
+            
+            if (connectionStatus === 'error' && !wsRef.current) {
+              setConnectionStatus('polling');
+            }
+            return;
+          }
+        }
+      }
+
+      console.log('🔄 Fetching fresh disease cards from:', API_URL);
       const response = await fetch(API_URL, {
         method: 'GET',
         headers: {
@@ -204,6 +231,11 @@ const DiseaseCarousel = () => {
 
       const sortedData = data.sort((a, b) => a.position - b.position);
 
+      // 🔹 2. Cache the fresh data
+      localStorage.setItem(CACHE_KEY, JSON.stringify(sortedData));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+      console.log('💾 Cached fresh disease card data');
+
       setCards(sortedData);
       console.log(`✅ Cards set: ${sortedData.length} cards`);
 
@@ -211,7 +243,15 @@ const DiseaseCarousel = () => {
         setConnectionStatus('polling');
       }
     } catch (error) {
-      console.error('❌ Error fetching cards:', error);
+      console.error('❌ Error fetching disease cards:', error);
+
+      // 🔹 3. Fallback to stale cache on error
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      if (cachedData) {
+        console.log('📦 Using stale cache as fallback');
+        const parsedData = JSON.parse(cachedData);
+        setCards(parsedData);
+      }
 
       if (connectionStatus !== 'connected' && connectionStatus !== 'polling') {
         setConnectionStatus('error');
@@ -271,94 +311,94 @@ const DiseaseCarousel = () => {
   const displayCards = getDisplayCards();
 
   return (
-  <div
-    ref={containerRef}
-    className="py-8 sm:py-12 md:py-16 relative overflow-hidden bg-cover bg-center"
-    style={{ backgroundImage: "url('/bg2.jpg')" }}
-  >
-    <div className="absolute inset-0 opacity-10">
-      <div className="absolute top-0 left-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-emerald-300 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-teal-300 rounded-full blur-3xl"></div>
-    </div>
-
-    <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 relative z-10">
-      <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8 md:mb-10">
-        <h2 className="text-xl sm:text-2xl md:text-3xl text-center text-[#147140] font-bold">
-          Effective Homeopathic <span className="font-normal">Solutions</span>
-        </h2>
+    <div
+      ref={containerRef}
+      className="py-8 sm:py-12 md:py-16 relative overflow-hidden bg-cover bg-center"
+      style={{ backgroundImage: "url('/bg2.jpg')" }}
+    >
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-emerald-300 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-teal-300 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full">
-          {displayCards.map((card, index) => {
-            const delay = index * 150;
-            const isFromLeft = index % 2 === 0;
-            return (
-              <div
-                key={`${card.id}-${currentIndex}-${index}`}
-                className="bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl overflow-hidden transform hover:scale-105 transition-all duration-300 w-full"
-                style={{
-                  animation: isVisible && hasAnimated ? 'none' : `slideIn${isFromLeft ? 'Left' : 'Right'} 0.6s ease-out ${delay}ms both`,
-                }}
-              >
-                <div className="bg-[#147140] p-3 sm:p-4 text-white">
-                  <h3 className="text-base sm:text-lg font-bold text-center mb-1">
-                    {card.title}
-                  </h3>
-                  <p className="text-xs text-emerald-100 text-center line-clamp-2">
-                    {card.description}
-                  </p>
-                </div>
+      <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 relative z-10">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8 md:mb-10">
+          <h2 className="text-xl sm:text-2xl md:text-3xl text-center text-[#147140] font-bold">
+            Effective Homeopathic <span className="font-normal">Solutions</span>
+          </h2>
+        </div>
 
-                <div className="relative h-36 sm:h-40 md:h-44 lg:h-48 bg-[#147140]">
-                  {card.image ? (
-                    <img
-                      src={getImageSrc(card.image)}
-                      alt={card.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        console.error('Image load error for:', card.title);
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-emerald-300 text-3xl sm:text-4xl md:text-5xl">🏥</div>
-                    </div>
-                  )}
+        <div className="relative w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full">
+            {displayCards.map((card, index) => {
+              const delay = index * 150;
+              const isFromLeft = index % 2 === 0;
+              return (
+                <div
+                  key={`${card.id}-${currentIndex}-${index}`}
+                  className="bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl overflow-hidden transform hover:scale-105 transition-all duration-300 w-full"
+                  style={{
+                    animation: isVisible && hasAnimated ? 'none' : `slideIn${isFromLeft ? 'Left' : 'Right'} 0.6s ease-out ${delay}ms both`,
+                  }}
+                >
+                  <div className="bg-[#147140] p-3 sm:p-4 text-white">
+                    <h3 className="text-base sm:text-lg font-bold text-center mb-1">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs text-emerald-100 text-center line-clamp-2">
+                      {card.description}
+                    </p>
+                  </div>
+
+                  <div className="relative h-36 sm:h-40 md:h-44 lg:h-48 bg-[#147140]">
+                    {card.image ? (
+                      <img
+                        src={getImageSrc(card.image)}
+                        alt={card.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error('Image load error for:', card.title);
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="text-emerald-300 text-3xl sm:text-4xl md:text-5xl">🏥</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-100px) scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(100px) scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+          }
+        }
+      `}</style>
     </div>
-
-    <style>{`
-      @keyframes slideInLeft {
-        from {
-          opacity: 0;
-          transform: translateX(-100px) scale(0.9);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0) scale(1);
-        }
-      }
-
-      @keyframes slideInRight {
-        from {
-          opacity: 0;
-          transform: translateX(100px) scale(0.9);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0) scale(1);
-        }
-      }
-    `}</style>
-  </div>
-);
+  );
 };
 
 export default DiseaseCarousel;

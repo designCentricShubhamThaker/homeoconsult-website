@@ -64,8 +64,6 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      // Detect scroll direction
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setScrollDirection("down");
       } else {
@@ -87,8 +85,8 @@ export default function Header() {
     { name: "Services", path: "/services" },
     { name: "Cured Cases", path: "/cured-cases" },
     { name: "Testimonials", path: "/testimonials" },
-    { name: "FAQs", path: "/faqs" },
-    { name: "Contact Us", path: "/contact-us" },
+    { name: "FAQs", path: "/faq's" },
+    { name: "Contact Us", path: "/ContactUs" },
   ];
 
   const createSlug = (name) => {
@@ -195,7 +193,7 @@ export default function Header() {
                 </motion.a>
               ))}
 
-  
+
               <div className="relative ml-auto">
                 <motion.button
                   className="flex items-center text-gray-700 hover:text-green-700 text-sm font-medium transition-colors"
@@ -213,32 +211,32 @@ export default function Header() {
 
                 <AnimatePresence>
                   {isAilmentsOpen && (
-                 <motion.div
-  className="absolute top-full right-0 translate-x-10 mt-2 w-[750px] bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg shadow-xl border border-emerald-800 z-50"
-  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-  animate={{ opacity: 1, y: 0, scale: 1 }}
-  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-  transition={{ duration: 0.2 }}
-  onMouseEnter={() => setIsAilmentsOpen(true)}
-  onMouseLeave={() => setIsAilmentsOpen(false)}
->
-  <div className="p-4 grid grid-cols-3 gap-1">
-    {DISEASES.map((disease, index) => (
-      <motion.button
-        key={disease}
-        onClick={() => handleDiseaseClick(disease)}
-        className="text-left px-3 py-1.5 rounded-md text-white hover:bg-emerald-800 text-xs font-medium transition-colors flex items-center w-full"
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.01, duration: 0.2 }}
-        whileHover={{ x: 3, backgroundColor: 'rgba(6,78,59,0.8)' }}
-      >
-        <span className="mr-2 text-emerald-300">▶</span>
-        {disease}
-      </motion.button>
-    ))}
-  </div>
-</motion.div>
+                    <motion.div
+                      className="absolute top-full right-0 translate-x-10 mt-2 w-[750px] bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg shadow-xl border border-emerald-800 z-50"
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      onMouseEnter={() => setIsAilmentsOpen(true)}
+                      onMouseLeave={() => setIsAilmentsOpen(false)}
+                    >
+                      <div className="p-4 grid grid-cols-3 gap-1">
+                        {DISEASES.map((disease, index) => (
+                          <motion.button
+                            key={disease}
+                            onClick={() => handleDiseaseClick(disease)}
+                            className="text-left px-3 py-1.5 rounded-md text-white hover:bg-emerald-800 text-xs font-medium transition-colors flex items-center w-full"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.01, duration: 0.2 }}
+                            whileHover={{ x: 3, backgroundColor: 'rgba(6,78,59,0.8)' }}
+                          >
+                            <span className="mr-2 text-emerald-300">▶</span>
+                            {disease}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </motion.div>
 
                   )}
                 </AnimatePresence>
