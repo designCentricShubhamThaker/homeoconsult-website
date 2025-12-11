@@ -25,6 +25,10 @@ const AllTestimonials = () => {
   const [loading, setLoading] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState('connecting');
+  const PACKAGES_CACHE_KEY = 'packages_cache';
+  const PACKAGES_CACHE_TIMESTAMP_KEY = 'packages_cache_timestamp';
+
+  const CACHE_DURATION = 30 * 60 * 1000;
 
   const wsRef = useRef(null);
   const autoPlayRef = useRef(null);
@@ -61,21 +65,27 @@ const AllTestimonials = () => {
     console.log('📌 Updated selectedDiseaseRef to:', selectedDisease);
   }, [selectedDisease]);
 
-  const fetchPackages = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/packages', {
-        method: 'GET',
-        headers: {
-          'ngrok-skip-browser-warning': 'true',
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      setPackages(data);
-    } catch (error) {
-      console.error('Error fetching packages:', error);
+ const fetchPackages = async () => {
+  try {
+    console.log('🔄 Fetching fresh packages from server...');
+    const response = await fetch('http://localhost:8000/packages', {
+      method: 'GET',
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    setPackages(data);
+  } catch (error) {
+    console.error('❌ Error fetching packages:', error);
+    // Keep existing packages on error
+    if (packages.length === 0) {
+      setPackages([]);
     }
-  };
+  }
+};
 
   const toggleDisease = (disease) => {
     if (selectedDiseases.includes(disease)) {
@@ -381,73 +391,54 @@ const AllTestimonials = () => {
     console.log('Calculated price:', { totalPrice, currency });
   };
 
-  const fetchTestimonialsByDisease = async (disease) => {
-    console.log('🔄 Fetching testimonials for:', disease);
+ const fetchTestimonialsByDisease = async (disease) => {
+  console.log('🔄 AllTestimonials: Fetching for:', disease);
 
-    const isWebSocketUpdate = testimonials.length > 0;
-    if (!isWebSocketUpdate) {
-      setLoading(true);
+  try {
+    console.log('🔄 AllTestimonials: Fetching fresh from server...');
+    const response = await fetch('http://localhost:8000/testimonials', {
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    try {
-      const response = await fetch(
-        `http://localhost:8000/testimonials`,
-        {
-          headers: {
-            'ngrok-skip-browser-warning': 'true',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+    const allTestimonials = await response.json();
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('📦 Testimonials received:', data.length);
-
-        // Filter testimonials by selected disease
-        const filteredTestimonials = data.filter(t => t.disease_name === disease);
-
-        setTestimonials(filteredTestimonials);
-
-        if (filteredTestimonials.length === 0) {
-          setCurrentIndex(0);
-        } else {
-          if (currentIndex >= filteredTestimonials.length) {
-            setCurrentIndex(0);
-          }
-        }
-
-        if (connectionStatus === 'error' && !wsRef.current) {
-          setConnectionStatus('polling');
-        }
-
-        console.log('✅ Testimonials updated successfully');
-      } else {
-        console.error('❌ Error response:', response.status);
-        setTestimonials([]);
-        setCurrentIndex(0);
-      }
-    } catch (error) {
-      console.error('❌ Error fetching testimonials:', error);
+    if (!Array.isArray(allTestimonials)) {
+      console.error('❌ Invalid data format, expected array');
       setTestimonials([]);
       setCurrentIndex(0);
-
-      if (connectionStatus !== 'connected' && connectionStatus !== 'polling') {
-        setConnectionStatus('error');
-      }
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
 
-  const handlePrevious = () => {
-    setIsAutoPlaying(false);
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else {
-      setCurrentIndex(testimonials.length - 1);
+    // Filter by selected disease
+    const filteredTestimonials = allTestimonials.filter(t => t.disease_name === disease);
+    console.log('📦 AllTestimonials: Filtered for', disease, ':', filteredTestimonials.length);
+
+    setTestimonials(filteredTestimonials);
+
+    if (filteredTestimonials.length === 0) {
+      setCurrentIndex(0);
+    } else if (currentIndex >= filteredTestimonials.length) {
+      setCurrentIndex(0);
     }
-  };
+
+  } catch (error) {
+    console.error('❌ AllTestimonials Error:', error);
+    // Keep existing testimonials on error
+    if (testimonials.length === 0) {
+      setTestimonials([]);
+      setCurrentIndex(0);
+    }
+  }
+};
+
+
 
   const handleNext = () => {
     if (testimonials.length === 0) return;
@@ -458,8 +449,6 @@ const AllTestimonials = () => {
       setCurrentIndex(0);
     }
   };
-
-  const currentTestimonial = testimonials[currentIndex];
 
   return (
     <Layout>
@@ -516,14 +505,9 @@ const AllTestimonials = () => {
 
 
 
-        {/* Testimonials Section */}
+    
         <div className="w-full  bg-gray-50 px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center min-h-[300px] sm:min-h-[400px]">
-              <div className="animate-spin w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
-              <p className="text-gray-600 mt-3 sm:mt-4 text-xs sm:text-sm md:text-base font-medium">Loading testimonials...</p>
-            </div>
-          ) : (
+         
             <div className="w-full max-w-7xl mx-auto">
               <div className="bg-white rounded-lg shadow-xl overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-12">
@@ -578,49 +562,47 @@ const AllTestimonials = () => {
                           {selectedDisease}
                         </h2>
 
-                        <div className="space-y-4 sm:space-y-6 max-h-[400px] sm:max-h-[500px] md:max-h-[600px] overflow-y-auto pr-1 sm:pr-2 custom-scrollbar">
-                          {testimonials.map((testimonial, idx) => (
+                        <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                          {testimonials.map((testimonial) => (
                             <div
                               key={testimonial.id}
-                              className="bg-gradient-to-br from-white to-gray-50 rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:shadow-lg transition-shadow"
+                              className="bg-white rounded border border-gray-200 p-3 hover:shadow-md transition-shadow"
                             >
-                              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                                {/* Disease Image */}
-                                {testimonial.image && (
-                                  <div className="flex-shrink-0 self-center sm:self-start">
-                                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-emerald-500 shadow-md">
-                                      <img
-                                        src={`data:image/jpeg;base64,${testimonial.image}`}
-                                        alt={testimonial.disease_name}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    </div>
+                              <div className="flex items-start gap-3">
+                                {/* Avatar */}
+                                <div className="flex-shrink-0">
+                                  <div
+                                    className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-emerald-500"
+                                    style={{
+                                      backgroundColor: testimonial.patient_name
+                                        ? `hsl(${(testimonial.patient_name.charCodeAt(0) * 137.5) % 360}, 70%, 85%)`
+                                        : 'hsl(200, 70%, 85%)'
+                                    }}
+                                  >
+                                    <span className="text-white font-bold text-lg">
+                                      {testimonial.patient_name ? testimonial.patient_name.charAt(0).toUpperCase() : '?'}
+                                    </span>
                                   </div>
-                                )}
+                                </div>
 
-                                {/* Testimonial Content */}
-                                <div className="flex-1 min-w-0 w-full">
-                                  <div className="mb-2 sm:mb-3">
-                                    <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 break-words">
+                                {/* Content */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-baseline gap-2 mb-1">
+                                    <h3 className="font-semibold text-gray-800 text-sm truncate">
                                       {testimonial.patient_name}
                                     </h3>
-                                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">
-                                      {testimonial.case_id && (
-                                        <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 sm:py-1 rounded">
-                                          Case Ref # {testimonial.case_id}
-                                        </span>
-                                      )}
-                                      <span className="text-gray-500">
-                                        {testimonial.branch}
+                                    {testimonial.case_id && (
+                                      <span className="text-xs text-emerald-600 whitespace-nowrap">
+                                        #{testimonial.case_id}
                                       </span>
-                                    </div>
+                                    )}
                                   </div>
 
-                                  <div className="bg-white rounded-lg p-3 sm:p-4 border-l-4 border-emerald-500">
-                                    <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-relaxed break-words">
-                                      {testimonial.brief}
-                                    </p>
-                                  </div>
+                                  <p className="text-xs text-gray-500 mb-1.5">{testimonial.branch}</p>
+
+                                  <p className="text-sm text-gray-700 leading-snug line-clamp-2">
+                                    {testimonial.brief}
+                                  </p>
                                 </div>
                               </div>
                             </div>
@@ -632,20 +614,16 @@ const AllTestimonials = () => {
                 </div>
               </div>
             </div>
-          )}
         </div>
 
-        {/* Comprehensive Plan Section */}
         <div className="bg-gray-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
             <div className="text-center mb-4 sm:mb-6 md:mb-8">
               <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#207755] mb-2">
                 Comprehensive <span className="font-normal">Plan</span>
               </h2>
             </div>
 
-            {/* Main Content Box */}
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                 {/* Left Side - Disease Selection */}

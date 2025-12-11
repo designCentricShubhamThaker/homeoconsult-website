@@ -12,7 +12,6 @@ import HomeopathyFAQ from "./FAQ/HomeopathyFAQ";
 import ConsumerHealthFAQ from "./FAQ/ConsumerHealthFAQ";
 import ContactUsForm from "./ContactUs/ContactUsForm";
 import DoctorSec from "./DoctorsSection.jsx/DoctorSec";
-import TestimonialDisplay from "./components/Testimonials";
 import AllTestimonails from "./Testimonials/AllTestimonails";
 import BlogSection from "./Blogs/BlogSection";
 import DisclaimerComponent from "./components/Disclaimer";

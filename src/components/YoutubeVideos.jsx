@@ -8,9 +8,7 @@ const YouTubeVideos = () => {
 
   const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
   const CHANNEL_ID = import.meta.env.VITE_YOUTUBE_CHANNEL_ID
-  // const API_KEY = "AIzaSyA4RojSosCVH5bjhN_z2Kj7QTRk0fwhVNk"
-  // const CHANNEL_ID = "UCak5ufZMSsLqyA5fTq3LBEQ"
-
+ 
   console.log('Using API Key:', API_KEY);
   console.log('Using Channel ID:', CHANNEL_ID);
 
@@ -19,7 +17,6 @@ const YouTubeVideos = () => {
   }, []);
 
   const parseDuration = (duration) => {
-    // Parse ISO 8601 duration format (PT1H2M10S)
     const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
     const hours = parseInt(match[1] || 0);
     const minutes = parseInt(match[2] || 0);
@@ -203,7 +200,7 @@ const fetchVideos = async (forceRefresh = false) => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-2xl md:text-4xl font-bold text-center text-[#207755]">
-            Latest <span className='font-normal'>Videos</span>
+            From our experts <span className='font-normal'>for you</span>
           </h1>
           <p className="text-gray-600 text-lg mt-3 max-w-4xl mx-auto">
             Get valuable insights related to your health from our experts. Watch them share their knowledge

@@ -10,12 +10,14 @@ import TreatmentSelector from "./components/TreatmentSelector";
 import BlogListing from "./components/BlogListing";
 import TestimonialDisplay from "./components/Testimonials";
 import YouTubeVideos from "./components/YoutubeVideos";
-import AppointmentModal from "./components/AppointmentModal";
 import { useState } from "react";
 import { Calendar } from "lucide-react";
+import PatientFeedback from "./components/PatientFeedback";
+import EnquireNowModal from "./components/EnquireNowModal";
 
 const Home = () => {
-   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   return (
     <Layout>
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50">
@@ -25,15 +27,16 @@ const Home = () => {
         >
           <Calendar className="w-5 h-5 rotate-90" />
           <span className="text-sm font-semibold whitespace-nowrap transform rotate-180" style={{ writingMode: 'vertical-rl' }}>
-            Book an Appointment
+          Enqire Now
           </span>
         </button>
       </div>
 
-      <AppointmentModal
+      <EnquireNowModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+      
       <Banner />
       <WelcomeSection />
       <DiseaseCarousel />
@@ -41,11 +44,19 @@ const Home = () => {
       <OurMission />
       <DoctorProfile />
       <TreatmentSelector />
+      <PatientFeedback />
       <TestimonialDisplay />
-      <YouTubeVideos />
-      <BlogListing />
+      
+      {/* YouTube Videos Section with ID */}
+      <div id="youtube">
+        <YouTubeVideos />
+      </div>
+      
+      {/* Blogs Section with ID */}
+      <div id="blogs">
+        <BlogListing />
+      </div>
     </Layout>
-
   );
 };
 

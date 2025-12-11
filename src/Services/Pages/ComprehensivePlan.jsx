@@ -20,7 +20,7 @@ const DISEASES = [
 
 // Cache Configuration
 const API_URL = 'http://localhost:8000/packages';
-const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/packages/ws';
+const WS_URL = 'ws://localhost:8000/packages/ws';
 const CACHE_KEY = 'packages_cache_comprehensive';
 const CACHE_TIMESTAMP_KEY = 'packages_cache_comprehensive_timestamp';
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
@@ -757,7 +757,7 @@ Your treatment plan has been confirmed.`);
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border-gray-300 rounded px-2 py-1.5 text-xs focus:border-gray-400 focus:outline-none"
+                            className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:border-gray-400 focus:outline-none"
                             required
                           />
                           <Mail className="absolute right-2 top-2 w-3 h-3 text-gray-400" />

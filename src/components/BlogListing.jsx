@@ -14,7 +14,7 @@ export default function BlogListing() {
   const reconnectAttemptsRef = useRef(0);
 
   const API_URL = 'http://localhost:8000/blogs';
-  const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/blogs/ws';
+  const WS_URL = 'ws://localhost:8000/blogs/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
   const POLLING_INTERVAL = 5000;

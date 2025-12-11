@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, Phone, LogIn, ChevronDown } from "lucide-react";
 import { motion, useScroll, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const DISEASES = [
   "ACNE",
@@ -56,28 +56,46 @@ const DISEASES = [
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAilmentsOpen, setIsAilmentsOpen] = useState(false);
+  const [isMediaOpen, setIsMediaOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollDirection, setScrollDirection] = useState("up");
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Detect if screen is mobile/tablet
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setScrollDirection("down");
-      } else {
-        setScrollDirection("up");
+      
+      // Only apply scroll direction logic for desktop
+      if (!isMobile) {
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          setScrollDirection("down");
+        } else {
+          setScrollDirection("up");
+        }
       }
 
-      // Check if scrolled past threshold
       setIsScrolled(currentScrollY > 20);
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isMobile]);
 
   const navLinks = [
     { name: "About Us", path: "/about-us" },
@@ -87,6 +105,13 @@ export default function Header() {
     { name: "Testimonials", path: "/testimonials" },
     { name: "FAQs", path: "/faq's" },
     { name: "Contact Us", path: "/ContactUs" },
+  ];
+
+  const mediaLinks = [
+    { name: "YouTube", path: "#youtube", icon: "▶️" },
+    { name: "LinkedIn", url: "https://www.linkedin.com", icon: "💼" },
+    { name: "Instagram", url: "https://www.instagram.com", icon: "📸" },
+    { name: "Facebook", url: "https://www.facebook.com", icon: "👥" },
   ];
 
   const createSlug = (name) => {
@@ -104,12 +129,67 @@ export default function Header() {
     setIsMenuOpen(false);
   };
 
+  const handleSectionScroll = (sectionId) => {
+    setIsMenuOpen(false);
+    setIsMediaOpen(false);
+
+    const goToSection = () => {
+      const element = document.getElementById(sectionId);
+      if (!element) return;
+
+      const headerOffset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    };
+
+    // If not on home page → navigate home first
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(goToSection, 300);
+      return;
+    }
+
+    // If already on home page → wait for menu animation to finish
+    setTimeout(goToSection, 300);
+  };
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerOffset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleMediaClick = (link) => {
+    if (link.path && link.path.startsWith('#')) {
+      const sectionId = link.path.substring(1);
+      handleSectionScroll(sectionId);
+    } else if (link.url) {
+      window.open(link.url, '_blank', 'noopener,noreferrer');
+      setIsMediaOpen(false);
+      setIsMenuOpen(false);
+    }
+  };
+
   return (
     <motion.header
       className="bg-white shadow-sm sticky top-0 z-50"
       initial={{ y: 0 }}
       animate={{
-        y: scrollDirection === "down" && lastScrollY > 100 ? -100 : 0,
+        // Only hide header on desktop, keep it fixed on mobile
+        y: !isMobile && scrollDirection === "down" && lastScrollY > 100 ? -100 : 0,
         boxShadow: isScrolled
           ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
           : "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
@@ -117,8 +197,8 @@ export default function Header() {
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo */}
+        <div className="flex justify-between items-center py-1 lg:py-2">
+          {/* Logo - Smaller on mobile */}
           <motion.div
             className="shrink-0 cursor-pointer"
             onClick={() => navigate("/")}
@@ -129,7 +209,7 @@ export default function Header() {
             <img
               src="/homeo_consult_logo.jpg"
               alt="Homeo Consult Logo"
-              className="h-20 w-auto object-contain"
+              className="h-12 sm:h-16 lg:h-15 w-auto object-contain"
             />
           </motion.div>
 
@@ -193,7 +273,6 @@ export default function Header() {
                 </motion.a>
               ))}
 
-
               <div className="relative ml-auto">
                 <motion.button
                   className="flex items-center text-gray-700 hover:text-green-700 text-sm font-medium transition-colors"
@@ -212,7 +291,7 @@ export default function Header() {
                 <AnimatePresence>
                   {isAilmentsOpen && (
                     <motion.div
-                      className="absolute top-full right-0 translate-x-10 mt-2 w-[750px] bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg shadow-xl border border-emerald-800 z-50"
+                      className="absolute top-full mt-3 right-0 translate-x-10  w-[750px] bg-white rounded-lg shadow-xl border border-emerald-400 z-50"
                       initial={{ opacity: 0, y: -10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -225,11 +304,11 @@ export default function Header() {
                           <motion.button
                             key={disease}
                             onClick={() => handleDiseaseClick(disease)}
-                            className="text-left px-3 py-1.5 rounded-md text-white hover:bg-emerald-800 text-xs font-medium transition-colors flex items-center w-full"
+                            className="text-left px-3 py-1.5 rounded-md text-emerald-700 bg-white hover:bg-white text-xs font-medium transition-colors flex items-center w-full"
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.01, duration: 0.2 }}
-                            whileHover={{ x: 3, backgroundColor: 'rgba(6,78,59,0.8)' }}
+                            whileHover={{ x: 3, backgroundColor: 'rgba(255,255,255,0.8)' }}
                           >
                             <span className="mr-2 text-emerald-300">▶</span>
                             {disease}
@@ -237,7 +316,6 @@ export default function Header() {
                         ))}
                       </div>
                     </motion.div>
-
                   )}
                 </AnimatePresence>
               </div>
@@ -432,6 +510,78 @@ export default function Header() {
                       {link.name}
                     </motion.a>
                   ))}
+
+                  {/* Mobile Blogs Link */}
+                  <motion.button
+                    onClick={() => handleSectionScroll('blogs')}
+                    className="w-full text-left text-gray-700 hover:text-green-700 hover:bg-green-50 px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.55 }}
+                    whileHover={{ x: 4 }}
+                  >
+                    Blogs
+                  </motion.button>
+
+                  {/* Mobile YouTube Videos Link */}
+                  <motion.button
+                    onClick={() => handleSectionScroll('youtube')}
+                    className="w-full text-left text-gray-700 hover:text-green-700 hover:bg-green-50 px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 }}
+                    whileHover={{ x: 4 }}
+                  >
+                    YouTube Videos
+                  </motion.button>
+
+                  {/* Mobile Media Links Accordion */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.65 }}
+                  >
+                    <motion.button
+                      onClick={() => setIsMediaOpen(!isMediaOpen)}
+                      className="w-full flex items-center justify-between text-gray-700 hover:text-green-700 hover:bg-green-50 px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                      whileHover={{ x: 4 }}
+                    >
+                      Media Links
+                      <motion.div
+                        animate={{ rotate: isMediaOpen ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </motion.div>
+                    </motion.button>
+
+                    <AnimatePresence>
+                      {isMediaOpen && (
+                        <motion.div
+                          className="pl-4 pr-2 mt-1"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {mediaLinks.map((link, index) => (
+                            <motion.button
+                              key={link.name}
+                              onClick={() => handleMediaClick(link)}
+                              className="w-full text-left px-4 py-2 text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-md text-sm transition-colors flex items-center gap-2"
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              whileHover={{ x: 4 }}
+                            >
+                              <span>{link.icon}</span>
+                              {link.name}
+                            </motion.button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
                 </nav>
               </div>
             </motion.div>

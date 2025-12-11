@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const API_BASE_URL = 'http://localhost:8000/testimonials';
-const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/testimonials/ws';
-const CACHE_KEY = 'testimonials_cache';
-const CACHE_TIMESTAMP_KEY = 'testimonials_cache_timestamp';
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const WS_URL = 'ws://localhost:8000/testimonials/ws';
 
 export default function TestimonialDisplay() {
   const [diseaseGroups, setDiseaseGroups] = useState([]);
   const [currentDiseaseIndex, setCurrentDiseaseIndex] = useState(0);
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const ws = useRef(null);
+  const ws = React.useRef(null);
 
   useEffect(() => {
     fetchTestimonials();
@@ -37,7 +34,7 @@ export default function TestimonialDisplay() {
 
       if (message.type === 'create' || message.type === 'update' || message.type === 'delete') {
         console.log('🔄 Refreshing testimonials due to:', message.type);
-        fetchTestimonials(true); // Force refresh
+        fetchTestimonials(true);
       }
     };
 
@@ -53,34 +50,13 @@ export default function TestimonialDisplay() {
 
   const fetchTestimonials = async (forceRefresh = false) => {
     try {
-      // 🔹 1. Check Cache (unless force refresh)
-      if (!forceRefresh) {
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
-
-        if (cachedData && cacheTimestamp) {
-          const now = Date.now();
-          const cacheAge = now - parseInt(cacheTimestamp);
-
-          if (cacheAge < CACHE_DURATION) {
-            const parsedData = JSON.parse(cachedData);
-            console.log('📦 Loaded testimonials from cache (age:', Math.round(cacheAge / 60000), 'minutes)');
-            setDiseaseGroups(parsedData);
-            return;
-          }
-        }
-      }
-
-      console.log('🔄 Fetching fresh testimonials from server...');
       const response = await fetch(API_BASE_URL, {
-        method: "GET",
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
+        headers: { "ngrok-skip-browser-warning": "true" },
       });
 
       const data = await response.json() || [];
 
+      // Group by disease
       const grouped = data.reduce((acc, testimonial) => {
         const disease = testimonial.disease_name;
         if (!acc[disease]) {
@@ -95,21 +71,11 @@ export default function TestimonialDisplay() {
       }, {});
 
       const groupedArray = Object.values(grouped);
-
-      // 🔹 2. Cache the fresh data
-      localStorage.setItem(CACHE_KEY, JSON.stringify(groupedArray));
-      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
-      console.log('💾 Cached fresh testimonial data');
-
       setDiseaseGroups(groupedArray);
     } catch (error) {
-      console.error('❌ Error fetching testimonials:', error);
-      
-      // 🔹 3. Fallback to stale cache on error
-      const cachedData = localStorage.getItem(CACHE_KEY);
-      if (cachedData) {
-        console.log('📦 Using stale cache as fallback');
-        setDiseaseGroups(JSON.parse(cachedData));
+      console.error('❌ TestimonialDisplay Error:', error);
+      if (diseaseGroups.length === 0) {
+        setDiseaseGroups([]);
       }
     }
   };
@@ -140,6 +106,7 @@ export default function TestimonialDisplay() {
     return () => clearInterval(scrollInterval);
   }, [diseaseGroups, currentDiseaseIndex, currentTestimonialIndex]);
 
+  // Show loading state while fetching testimonials
   if (diseaseGroups.length === 0) {
     return (
       <div className="min-h-screen bg-linear-to-br from-green-200 via-green-100 to-teal-100 flex items-center justify-center">
@@ -176,9 +143,9 @@ export default function TestimonialDisplay() {
       backgroundRepeat: 'no-repeat'
     }}>
 
-      <div className="py-3 sm:py-4 md:py-5 lg:py-6 px-3 sm:px-4 md:px-6 lg:px-8 mt-8 sm:mt-10 md:mt-12 lg:mt-16 xl:mt-20 relative z-10 shrink-0">
+      <div className="py-3 sm:py-4 md:py-5 lg:py-6 px-3 sm:px-4 md:px-6 lg:px-8  sm:mt-4 md:mt-6 lg:mt-16 xl:mt-20 relative z-10 shrink-0">
         <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-center text-white drop-shadow-lg">
-          Eight Decades of <span className="font-light">Proven Care</span>
+          Over a century of <span className="font-light">Proven Care</span>
         </h1>
       </div>
 

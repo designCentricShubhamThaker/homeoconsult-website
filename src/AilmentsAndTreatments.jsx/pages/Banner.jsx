@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Loader2, X, Plus, Check, MapPin } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DiseaseTreatmentSection from './DiseaseTreamtmentSelector';
 import { Calendar, CreditCard, Search } from 'lucide-react';
-
 
 const Banner = () => {
   const { diseaseName } = useParams();
@@ -19,14 +18,44 @@ const Banner = () => {
   const [selectedRegion, setSelectedRegion] = useState('');
   const [selectedTerm, setSelectedTerm] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
-
   const [showSecondaryDropdown, setShowSecondaryDropdown] = useState(false);
   const [secondarySearch, setSecondarySearch] = useState('');
-
   const [availableRegions, setAvailableRegions] = useState([]);
   const [availableTerms, setAvailableTerms] = useState([]);
   const [priceInfo, setPriceInfo] = useState(null);
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState(null);
 
+  const caseStudyRefs = useRef({});
+
+  const DISEASES = [
+    "ACNE", "Adenoids", "ADHD", "Alopecia areata", "Ankylosing Spondilitis",
+    "Arthritis", "Asthma", "Autism", "Calcaneal Spur", "Cervical Spondylosis",
+    "Chalazion & Stys", "Depression", "Dystonia", "ECZEMA", "Emotions & Stress",
+    "Fibroadenoma", "Fibroids", "Fissure In Ano", "Ganglion (Cyst)", "Hair Fall",
+    "Hemorrhoids (Piles)", "Herpes Zoster (Shingles)", "Infertility",
+    "Insomnia/Sleep Disorder", "Irritable Bowel Syndrome", "Kidney Stone",
+    "Lichen Planus", "Lipoma", "Migraine Headaches", "Molluscum contagiosum",
+    "Nasal Allergy", "PCOS or PCOD", "Perimenopause & Menopause",
+    "Prostatic Hyperplasia (BPH)", "Psoriasis", "Sciatica", "Sinusitis",
+    "Skin Allergies", "Tinnitus & Meniere's Disease", "Tonsillitis",
+    "Trigeminal Neuralgia", "Ulcerative Colitis/Crohns", "Urticaria/Hives",
+    "Vasculitis", "Vitiligo", "Vocal Cord Nodule", "Warts / Corns", "Not Listed"
+  ];
+
+  const filteredSecondaryDiseases = DISEASES.filter(d =>
+    d !== primaryDisease &&
+    d.toLowerCase().includes(secondarySearch.toLowerCase())
+  );
+
+  const scrollToCaseStudy = (caseStudyId) => {
+    setSelectedCaseStudy(caseStudyId);
+    if (caseStudyRefs.current[caseStudyId]) {
+      caseStudyRefs.current[caseStudyId].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchDiseaseDetails = async () => {
@@ -49,8 +78,8 @@ const Banner = () => {
         }
 
         const data = await response.json();
-       
         setDisease(data);
+
         if (data.case_studies && data.case_studies.length > 0) {
           setOpenAccordions({
             [`${data.case_studies[0].id}-why-choose`]: true
@@ -93,26 +122,6 @@ const Banner = () => {
     }
   };
 
-
-  const DISEASES = [
-    "ACNE", "Adenoids", "ADHD", "Alopecia areata", "Ankylosing Spondilitis",
-    "Arthritis", "Asthma", "Autism", "Calcaneal Spur", "Cervical Spondylosis",
-    "Chalazion & Stys", "Depression", "Dystonia", "ECZEMA", "Emotions & Stress",
-    "Fibroadenoma", "Fibroids", "Fissure In Ano", "Ganglion (Cyst)", "Hair Fall",
-    "Hemorrhoids (Piles)", "Herpes Zoster (Shingles)", "Infertility",
-    "Insomnia/Sleep Disorder", "Irritable Bowel Syndrome", "Kidney Stone",
-    "Lichen Planus", "Lipoma", "Migraine Headaches", "Molluscum contagiosum",
-    "Nasal Allergy", "PCOS or PCOD", "Perimenopause & Menopause",
-    "Prostatic Hyperplasia (BPH)", "Psoriasis", "Sciatica", "Sinusitis",
-    "Skin Allergies", "Tinnitus & Meniere's Disease", "Tonsillitis",
-    "Trigeminal Neuralgia", "Ulcerative Colitis/Crohns", "Urticaria/Hives",
-    "Vasculitis", "Vitiligo", "Vocal Cord Nodule", "Warts / Corns", "Not Listed"
-  ];
-  const filteredSecondaryDiseases = DISEASES.filter(d =>
-    d !== primaryDisease &&
-    d.toLowerCase().includes(secondarySearch.toLowerCase())
-  );
-
   const handleStartTreatment = () => {
     if (!primaryDisease || !selectedRegion || !selectedTerm || !paymentMethod) {
       alert('Please complete all required fields before starting treatment');
@@ -127,12 +136,11 @@ const Banner = () => {
       priceInfo,
       paymentMethod
     };
-console.log('Navigating with data:', treatmentData);
+    console.log('Navigating with data:', treatmentData);
     navigate('/services/comprehensive-plan', {
       state: { treatmentData }
     });
   };
-
 
   useEffect(() => {
     fetchPackages();
@@ -140,16 +148,13 @@ console.log('Navigating with data:', treatmentData);
 
   const fetchPackages = async () => {
     try {
-      const response = await fetch(
-        'http://localhost:8000/packages',
-        {
-          method: 'GET',
-          headers: {
-            'ngrok-skip-browser-warning': 'true',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch('http://localhost:8000/packages', {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json',
+        },
+      });
       const data = await response.json();
       setPackages(data);
       setLoading(false);
@@ -159,24 +164,22 @@ console.log('Navigating with data:', treatmentData);
     }
   };
 
+  useEffect(() => {
+    if (disease?.disease_name && packages.length > 0) {
+      const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
+      if (comprehensivePlan && comprehensivePlan.regions) {
+        const matchingRegions = comprehensivePlan.regions.filter(
+          r => r.disease.toLowerCase() === disease.disease_name.toLowerCase()
+        );
 
-useEffect(() => {
-  if (disease?.disease_name && packages.length > 0) {
-    const comprehensivePlan = packages.find(pkg => pkg.name === "Comprehensive plan");
-    if (comprehensivePlan && comprehensivePlan.regions) {
-      const matchingRegions = comprehensivePlan.regions.filter(
-        r => r.disease.toLowerCase() === disease.disease_name.toLowerCase()
-      );
+        const regions = [...new Set(matchingRegions.map(r => r.location))];
+        setAvailableRegions(regions);
 
-      const regions = [...new Set(matchingRegions.map(r => r.location))];
-      setAvailableRegions(regions);
-      
-      // FIX: Find the exact disease name from DISEASES array that matches
-      const exactDiseaseName = DISEASES.find(d => d.toLowerCase() === disease.disease_name.toLowerCase());
-      setPrimaryDisease(exactDiseaseName || disease.disease_name);
+        const exactDiseaseName = DISEASES.find(d => d.toLowerCase() === disease.disease_name.toLowerCase());
+        setPrimaryDisease(exactDiseaseName || disease.disease_name);
+      }
     }
-  }
-}, [packages, disease?.disease_name]);
+  }, [packages, disease?.disease_name]);
 
   useEffect(() => {
     if (primaryDisease && selectedRegion && packages.length > 0) {
@@ -185,7 +188,6 @@ useEffect(() => {
         const regionData = comprehensivePlan.regions.find(
           r => r.disease.toLowerCase() === primaryDisease.toLowerCase() && r.location === selectedRegion
         );
-        console.log(regionData, 'regionData');
         if (regionData) {
           const terms = regionData.duration_months.map((months, idx) => ({
             months,
@@ -199,13 +201,12 @@ useEffect(() => {
       }
     }
   }, [primaryDisease, selectedRegion, packages]);
-useEffect(() => {
-  if (disease?.disease_name && !primaryDisease) {
-    // Only set initial data if primaryDisease is not already set
-    setPrimaryDisease(disease.disease_name);
-  }
-}, [disease?.disease_name]);
 
+  useEffect(() => {
+    if (disease?.disease_name && !primaryDisease) {
+      setPrimaryDisease(disease.disease_name);
+    }
+  }, [disease?.disease_name]);
 
   useEffect(() => {
     if (selectedTerm && availableTerms.length > 0) {
@@ -213,52 +214,6 @@ useEffect(() => {
       setPriceInfo(termInfo);
     }
   }, [selectedTerm, availableTerms]);
-
-
-
-  useEffect(() => {
-    const fetchDiseaseDetails = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch(`http://localhost:8000/diseases/by-name/${diseaseName}`, {
-          headers: {
-            'ngrok-skip-browser-warning': 'true',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Disease not found');
-          }
-          throw new Error('Failed to load disease details');
-        }
-
-        const data = await response.json();
-        console.log(data, 'data')
-        setDisease(data);
-
-        // Set first case study accordion open by default
-        if (data.case_studies && data.case_studies.length > 0) {
-          setOpenAccordions({
-            [`${data.case_studies[0].id}-why-choose`]: true
-          });
-        }
-      } catch (err) {
-        console.error('Error fetching disease:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (diseaseName) {
-      fetchDiseaseDetails();
-    }
-  }, [diseaseName]);
-
 
   if (loading) {
     return (
@@ -291,17 +246,18 @@ useEffect(() => {
     );
   }
 
+  const isPsychological = disease.disease_type?.toLowerCase() === 'psychological';
+
   return (
     <div className="bg-gray-50">
-
-
+      {/* Banner Section */}
       <div className="relative">
         <div className="hidden md:grid md:grid-cols-2 h-96">
           <div
             className="relative h-full bg-cover bg-center flex items-center justify-start px-12 lg:px-8"
             style={{ backgroundImage: "url('/ailments_banner.jpg')" }}
           >
-            <div className="text-white text-left max-w-lg  p-6 ">
+            <div className="text-white text-left max-w-lg p-6">
               <h2 className="text-5xl lg:text-6xl mb-6">Ailments & Treatments</h2>
               <p className="text-xl mb-3 font-semibold">
                 Regain {disease.disease_name} With Homeopathy
@@ -317,7 +273,6 @@ useEffect(() => {
               className="w-full h-full object-cover"
             />
           </div>
-
         </div>
 
         <div className="md:hidden">
@@ -329,7 +284,7 @@ useEffect(() => {
             />
           </div>
 
-          <div className=" px-6 py-10 text-center" style={{ backgroundImage: "url('/ailments_banner.jpg')" }}>
+          <div className="px-6 py-10 text-center" style={{ backgroundImage: "url('/ailments_banner.jpg')" }}>
             <h2 className="text-2xl mb-4 text-white">Ailments & Treatments</h2>
             <p className="text-xl mb-2 font-semibold text-white">
               Regain {disease.disease_name}
@@ -342,215 +297,334 @@ useEffect(() => {
         </div>
       </div>
 
-
       <div>
         <section className="mt-10">
           <DiseaseTreatmentSection disease={disease} />
         </section>
 
-        {disease.understandings && disease.understandings.length > 0 && (
-          <section className="mt-10 px-4 md:px-6">
-            <h2 className="text-2xl  flex justify-center md:text-2xl mb-8">
-              <span className="text-[#207755] font-bold">Understanding</span>{' '}
-              <span className="text-[#207755] ml-2">{disease.disease_name}</span>
-            </h2>
-
-            <div className="flex flex-col lg:flex-row gap-6">
-              <div className="flex-1 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(() => {
-                  const headingMap = {
-                    signs: "Common Signs and Symptoms",
-                    primary: "Primary Cause",
-                    risk_factor: "Risk Factors",
-                  };
-
-                  const grouped = disease.understandings.reduce((acc, understanding) => {
-                    if (!acc[understanding.category]) {
-                      acc[understanding.category] = [];
-                    }
-                    acc[understanding.category].push(understanding.content);
-                    return acc;
-                  }, {});
-
-                  return Object.entries(grouped).map(([category, contents]) => (
-                    <div
-                      key={category}
-                      className=" rounded-xl border border-[#207755] overflow-hidden 
-                 transition-all duration-300 hover:bg-[#E6F5F0] cursor-pointer"
-                    >
-                      <div className="relative bg-[#207755] text-white font-semibold text-sm px-5 py-3">
-                        {headingMap[category] || category}
-
-                        <div
-                          className="absolute left-6 -bottom-[6px] w-0 h-0
-            border-l-[8px] border-l-transparent 
-            border-r-[8px] border-r-transparent 
-            border-t-[8px] border-t-[#207755]"
-                        ></div>
-                      </div>
-
-                      <ul className="p-4 space-y-3 text-gray-700 text-sm">
-                        {contents.map((content, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-[#207755] font-bold leading-4">•</span>
-                            <span className="flex-1 text-[#207755] font-semibold leading-snug">{content}</span>
-                          </li>
-                        ))}
-                      </ul>
+        {/* FOR PSYCHOLOGICAL TYPE */}
+        {isPsychological ? (
+          <>
+            {/* Why Choose Section for Psychological */}
+            {disease.why_choose_items && disease.why_choose_items.length > 0 && (
+              <section className="w-full bg-[#E4F4E8] mt-4 py-10 px-4 md:px-8">
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                  {disease.why_choose_banner && (
+                    <div className="w-full md:w-[340px]">
+                      <img
+                        src={`data:image/jpeg;base64,${disease.why_choose_banner}`}
+                        alt="Why Choose Banner"
+                        className="w-full h-[340px] object-cover rounded-lg"
+                      />
                     </div>
-                  ));
-                })()}
+                  )}
 
-              </div>
-
-              <div className="flex-shrink-0 lg:w-80 flex items-center justify-center">
-                <img
-                  src="/100percent.png"
-                  alt="100% Satisfaction Guarantee"
-                  className="w-full max-w-sm lg:max-w-full h-auto object-contain"
-                />
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section className="w-full bg-[#E4F4E8] mt-4 py-10 px-4 md:px-8">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            {disease.why_choose_banner && (
-              <div className="w-full md:w-[340px]">
-                <img
-                  src={`data:image/jpeg;base64,${disease.why_choose_banner}`}
-                  alt="Why Choose Banner"
-                  className="w-full h-[340px] object-cover rounded-lg"
-                />
-              </div>
-            )}
-
-            <div className="flex-1">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#207755] mb-4">
-                Why Choose Homeopathy for <span className="font-normal">{diseaseName}</span> ?
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-                {disease.why_choose_items?.map(item => (
-                  <div key={item.id}>
-                    <h3 className="text-lg font-semibold text-[#207755] mb-1">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">
-                      {item.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-10 px-4 md:px-6">
-          <h2 className="text-3xl text-center font-bold  text-[#207755] mb-2">
-            Patient's <span className="text-[#207755] font-normal">Case Studies</span>
-          </h2>
-
-          <div className="space-y-4">
-            {disease.case_studies?.map((study, index) => (
-              <div key={study.id} className=" overflow-hidden">
-                <div className="md:flex">
-                  <div className="md:w-2/5 bg-gray-50 p-8 flex flex-col justify-center" >
-                    <div className="space-y-6">
-                      <div className="text-center">
-                        <div className="w-full  bg-gray-200 rounded-lg overflow-hidden mb-3">
-                          <img
-                            src={`data:image/jpeg;base64,${study.before_image || study.image}`}
-                            alt="Before Treatment"
-                            className="w-full h-full object-contain"
-                          />
+                  <div className="flex-1">
+                    <h2 className="text-2xl md:text-3xl font-bold text-[#207755] mb-4">
+                      Why Choose Homeopathy for <span className="font-normal">{diseaseName}</span> ?
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                      {disease.why_choose_items?.map(item => (
+                        <div key={item.id}>
+                          <h3 className="text-lg font-semibold text-[#207755] mb-1">
+                            {item.title}
+                          </h3>
+                          <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-line">
+                            {item.description}
+                          </p>
                         </div>
-
-                      </div>
-
-                      {study.after_image && (
-                        <div className="text-center">
-                          <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden mb-3">
-                            <img
-                              src={`data:image/jpeg;base64,${study.after_image}`}
-                              alt="After Treatment"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <p className="text-gray-700 font-medium">After Treatment</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="md:w-3/5 p-8 overflow-y-auto" >
-                    <div className="border-b border-gray-200">
-                      <button
-                        onClick={() => toggleAccordion(study.id, 'why-choose')}
-                        className="w-full flex justify-between items-center py-4 text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <h3 className="text-lg font-semibold text-emerald-600">
-                          Why Choose Our Approach?
-                        </h3>
-                        <ChevronDown
-                          className={`w-5 h-5 text-gray-500 transition-transform ${isOpen(study.id, 'why-choose') ? 'transform rotate-180' : ''
-                            }`}
-                        />
-                      </button>
-                      {isOpen(study.id, 'why-choose') && (
-                        <div className="pb-4 text-gray-700">
-                          <p>{study.why_choose_approach}</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="border-b border-gray-200">
-                      <button
-                        onClick={() => toggleAccordion(study.id, 'what-to-expect')}
-                        className="w-full flex justify-between items-center py-4 text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <h3 className="text-lg font-semibold text-emerald-600">
-                          What to Expect from Treatment?
-                        </h3>
-                        <ChevronDown
-                          className={`w-5 h-5 text-gray-500 transition-transform ${isOpen(study.id, 'what-to-expect') ? 'transform rotate-180' : ''
-                            }`}
-                        />
-                      </button>
-                      {isOpen(study.id, 'what-to-expect') && (
-                        <div className="pb-4 text-gray-700">
-                          <p>{study.what_to_expect}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="border-b border-gray-200">
-                      <button
-                        onClick={() => toggleAccordion(study.id, 'timeline')}
-                        className="w-full flex justify-between items-center py-4 text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <h3 className="text-lg font-semibold text-emerald-600">
-                          Timeline
-                        </h3>
-                        <ChevronDown
-                          className={`w-5 h-5 text-gray-500 transition-transform ${isOpen(study.id, 'timeline') ? 'transform rotate-180' : ''
-                            }`}
-                        />
-                      </button>
-                      {isOpen(study.id, 'timeline') && (
-                        <div className="pb-4 text-gray-700">
-                          <p>{study.timeline}</p>
-                        </div>
-                      )}
+                      ))}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              </section>
+            )}
 
+            {/* Patient Cured Cases for Psychological */}
+            {disease.patient_case_studies && disease.patient_case_studies.length > 0 && (
+              <section className="mt-10 px-4 md:px-6">
+                <h2 className="text-3xl text-center font-bold text-[#207755] mb-8">
+                  Patient <span className="font-normal">Cured Cases</span>
+                </h2>
+
+                {/* Cards Grid - Image + Title + Patient Name */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                  {disease.patient_case_studies?.map((caseStudy) => (
+                    <div
+                      key={caseStudy.id}
+                      onClick={() => scrollToCaseStudy(caseStudy.id)}
+                      className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all cursor-pointer transform hover:scale-105 ${selectedCaseStudy === caseStudy.id ? 'ring-4 ring-[#207755]' : ''
+                        }`}
+                    >
+                      <div className="h-64 overflow-hidden">
+                        <img
+                          src={`data:image/jpeg;base64,${caseStudy.image}`}
+                          alt={caseStudy.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-4 text-center">
+                        <h3 className="text-lg font-bold text-[#207755]">
+                          {caseStudy.title}
+                        </h3>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Detailed Case Studies - One Below Another */}
+                <div className="space-y-8">
+                  {disease.patient_case_studies?.map((caseStudy) => (
+                    <div
+                      key={caseStudy.id}
+                      ref={(el) => (caseStudyRefs.current[caseStudy.id] = el)}
+                      className={`bg-white rounded-lg shadow-lg p-6 md:p-8 transition-all ${selectedCaseStudy === caseStudy.id ? 'ring-4 ring-[#207755] shadow-2xl' : ''
+                        }`}
+                    >
+                      <h3 className="text-2xl font-bold text-[#207755] mb-6 border-b-2 border-[#207755] pb-3">
+                        {caseStudy.title}
+                      </h3>
+
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <span className="w-2 h-2 bg-[#207755] rounded-full"></span>
+                          Patient Description
+                        </h4>
+                        <p className="text-gray-700 leading-relaxed pl-4">
+                          {caseStudy.patient_description}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <span className="w-2 h-2 bg-[#207755] rounded-full"></span>
+                          Treatment
+                        </h4>
+                        <p className="text-gray-700 leading-relaxed pl-4 whitespace-pre-line">
+                          {caseStudy.cured_case_treatment}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+            {/* Additional Info Section - FOR PSYCHOLOGICAL TYPE */}
+            {disease.additional_info && disease.additional_info.length > 0 && (
+              <section className="mt-10 px-4 md:px-6">
+                <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
+                  <h2 className="text-2xl font-bold text-[#207755] mb-6">Additional Information</h2>
+                  <div className="space-y-6">
+                    {disease.additional_info.map((info, index) => (
+                      <div key={index} className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0">
+                        <h3 className="text-lg font-semibold text-[#207755] mb-3">
+                          {info.title}
+                        </h3>
+                        <p className="text-gray-700 leading-relaxed">
+                          {info.description}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+          </>
+        ) : (
+          <>
+            {disease.understandings && disease.understandings.length > 0 && (
+              <section className="mt-10 px-4 md:px-6">
+                <h2 className="text-2xl flex justify-center md:text-2xl mb-8">
+                  <span className="text-[#207755] font-bold">Understanding</span>{' '}
+                  <span className="text-[#207755] ml-2">{disease.disease_name}</span>
+                </h2>
+
+                <div className="flex flex-col lg:flex-row gap-6">
+                  <div className="flex-1 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {(() => {
+                      const headingMap = {
+                        signs: "Common Signs and Symptoms",
+                        primary: "Primary Cause",
+                        risk_factor: "Risk Factors",
+                      };
+
+                      const grouped = disease.understandings.reduce((acc, understanding) => {
+                        if (!acc[understanding.category]) {
+                          acc[understanding.category] = [];
+                        }
+                        acc[understanding.category].push(understanding.content);
+                        return acc;
+                      }, {});
+
+                      return Object.entries(grouped).map(([category, contents]) => (
+                        <div
+                          key={category}
+                          className="rounded-xl border border-[#207755] overflow-hidden transition-all duration-300 hover:bg-[#E6F5F0] cursor-pointer"
+                        >
+                          <div className="relative bg-[#207755] text-white font-semibold text-sm px-5 py-3">
+                            {headingMap[category] || category}
+                            <div className="absolute left-6 -bottom-[6px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-[#207755]"></div>
+                          </div>
+                          <ul className="p-4 space-y-3 text-gray-700 text-sm">
+                            {contents.map((content, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-[#207755] font-bold leading-4">•</span>
+                                <span className="flex-1 text-[#207755] font-semibold leading-snug">{content}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+
+                  <div className="flex-shrink-0 lg:w-80 flex items-center justify-center">
+                    <img
+                      src="/100percent.png"
+                      alt="100% Satisfaction Guarantee"
+                      className="w-full max-w-sm lg:max-w-full h-auto object-contain"
+                    />
+                  </div>
+                </div>
+              </section>
+            )}
+
+            <section className="w-full bg-[#E4F4E8] mt-4 py-10 px-4 md:px-8">
+              <div className="flex flex-col md:flex-row gap-8 items-start">
+                {disease.why_choose_banner && (
+                  <div className="w-full md:w-[340px]">
+                    <img
+                      src={`data:image/jpeg;base64,${disease.why_choose_banner}`}
+                      alt="Why Choose Banner"
+                      className="w-full h-[340px] object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+
+                <div className="flex-1">
+                  <h2 className="text-2xl md:text-3xl font-bold text-[#207755] mb-4">
+                    Why Choose Homeopathy for <span className="font-normal">{diseaseName}</span> ?
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                    {disease.why_choose_items?.map(item => (
+                      <div key={item.id}>
+                        <h3 className="text-lg font-semibold text-[#207755] mb-1">
+                          {item.title}
+                        </h3>
+                        <p className="text-gray-500 text-sm leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-10 px-4 md:px-6">
+              <h2 className="text-3xl text-center font-bold text-[#207755] mb-2">
+                Patient's <span className="text-[#207755] font-normal">Case Studies</span>
+              </h2>
+
+              <div className="space-y-4">
+                {disease.case_studies?.map((study) => (
+                  <div key={study.id} className="overflow-hidden">
+                    <div className="md:flex">
+                      <div className="md:w-2/5 bg-gray-50 p-8 flex flex-col justify-center">
+                        <div className="space-y-6">
+                          <div className="text-center">
+                            <div className="w-full bg-gray-200 rounded-lg overflow-hidden mb-3">
+                              <img
+                                src={`data:image/jpeg;base64,${study.before_image || study.image}`}
+                                alt="Before Treatment"
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          </div>
+
+                          {study.after_image && (
+                            <div className="text-center">
+                              <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden mb-3">
+                                <img
+                                  src={`data:image/jpeg;base64,${study.after_image}`}
+                                  alt="After Treatment"
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <p className="text-gray-700 font-medium">After Treatment</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="md:w-3/5 p-8 overflow-y-auto">
+                        <div className="border-b border-gray-200">
+                          <button
+                            onClick={() => toggleAccordion(study.id, 'why-choose')}
+                            className="w-full flex justify-between items-center py-4 text-left hover:bg-gray-50 transition-colors"
+                          >
+                            <h3 className="text-lg font-semibold text-emerald-600">
+                              Why Choose Our Approach?
+                            </h3>
+                            <ChevronDown
+                              className={`w-5 h-5 text-gray-500 transition-transform ${isOpen(study.id, 'why-choose') ? 'transform rotate-180' : ''}`}
+                            />
+                          </button>
+                          {isOpen(study.id, 'why-choose') && (
+                            <div className="pb-4 text-gray-700">
+                              <p>{study.why_choose_approach}</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="border-b border-gray-200">
+                          <button
+                            onClick={() => toggleAccordion(study.id, 'what-to-expect')}
+                            className="w-full flex justify-between items-center py-4 text-left hover:bg-gray-50 transition-colors"
+                          >
+                            <h3 className="text-lg font-semibold text-emerald-600">
+                              What to Expect from Treatment?
+                            </h3>
+                            <ChevronDown
+                              className={`w-5 h-5 text-gray-500 transition-transform ${isOpen(study.id, 'what-to-expect') ? 'transform rotate-180' : ''}`}
+                            />
+                          </button>
+                          {isOpen(study.id, 'what-to-expect') && (
+                            <div className="pb-4 text-gray-700">
+                              <p>{study.what_to_expect}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="border-b border-gray-200">
+                          <button
+                            onClick={() => toggleAccordion(study.id, 'timeline')}
+                            className="w-full flex justify-between items-center py-4 text-left hover:bg-gray-50 transition-colors"
+                          >
+                            <h3 className="text-lg font-semibold text-emerald-600">
+                              Timeline
+                            </h3>
+                            <ChevronDown
+                              className={`w-5 h-5 text-gray-500 transition-transform ${isOpen(study.id, 'timeline') ? 'transform rotate-180' : ''}`}
+                            />
+                          </button>
+                          {isOpen(study.id, 'timeline') && (
+                            <div className="pb-4 text-gray-700">
+                              <p>{study.timeline}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
+
+        {/* FAQs Section - Common for both types */}
         {disease.accordions && disease.accordions.length > 0 && (
-          <section className="w-full bg-[#7FB19C] py-16 px-4 md:px-8 ">
+          <section className="w-full bg-[#7FB19C] py-16 px-4 md:px-8">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12">
                 <span className="font-normal">Frequently</span> Asked Questions
@@ -558,10 +632,7 @@ useEffect(() => {
 
               <div className="space-y-4">
                 {disease.accordions.map((accordion, index) => (
-                  <div
-                    key={accordion.id}
-                    className="bg-white rounded-lg overflow-hidden"
-                  >
+                  <div key={accordion.id} className="bg-white rounded-lg overflow-hidden">
                     <button
                       onClick={() => toggleFaq(index)}
                       className="w-full flex justify-between items-center px-6 py-4 text-left hover:bg-gray-50 transition-colors"
@@ -588,15 +659,13 @@ useEffect(() => {
         )}
       </div>
 
-      <section className=' px-10 py-10 relative' style={{
+      {/* Comprehensive Plan Section - Common for both types */}
+      <section className='px-10 py-10 relative w-full' style={{
         backgroundImage: "url('/contact.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}>
-        {/* Optional overlay for better readability */}
-
-
         <div className="relative z-10 flex justify-center items-center min-h-screen">
           <div className="flex-[0_0_100%] lg:flex-[0_0_40%] lg:max-w-[40%]">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-emerald-100">
@@ -655,6 +724,8 @@ useEffect(() => {
                       </div>
                       {showSecondaryDropdown && (
                         <div className="absolute z-20 w-full mt-1 bg-white rounded-lg shadow-2xl border border-teal-200 max-h-48 overflow-hidden">
+
+                          {/* Search Header */}
                           <div className="p-2 border-b border-teal-100 sticky top-0 bg-white">
                             <div className="relative">
                               <Search className="absolute left-2 top-2 w-3 h-3 text-gray-400" />
@@ -668,8 +739,10 @@ useEffect(() => {
                               />
                             </div>
                           </div>
+
+                          {/* List */}
                           <div className="overflow-y-auto max-h-36">
-                            {filteredSecondaryDiseases.map(disease => (
+                            {filteredSecondaryDiseases.map((disease) => (
                               <div
                                 key={disease}
                                 className="px-3 py-1.5 text-xs hover:bg-teal-50 cursor-pointer flex items-center gap-2"
@@ -678,21 +751,30 @@ useEffect(() => {
                                   toggleSecondaryDisease(disease);
                                 }}
                               >
-                                <div className={`w-3 h-3 rounded border flex items-center justify-center ${secondaryDiseases.includes(disease) ? 'bg-teal-600 border-teal-600' : 'border-gray-300'}`}>
-                                  {secondaryDiseases.includes(disease) && <Check className="w-2 h-2 text-white" />}
+                                {/* ✅ FIXED CHECKBOX */}
+                                <div
+                                  className={`w-3 h-3 rounded border flex items-center justify-center 
+              ${secondaryDiseases.includes(disease)
+                                      ? 'bg-teal-600 border-teal-600'
+                                      : 'border-gray-300'
+                                    }`}
+                                >
+                                  {secondaryDiseases.includes(disease) && (
+                                    <Check className="w-2 h-2 text-white" />
+                                  )}
                                 </div>
+
                                 {disease}
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
+
                     </div>
                   </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-2">
-                  {/* Region Selection */}
                   <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-2.5 border border-emerald-200">
                     <label className="text-xs font-semibold text-[#207755] mb-1.5 flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5" />
@@ -764,10 +846,7 @@ useEffect(() => {
 
               <div className="p-3 border-t border-gray-100 flex justify-center items-center">
                 <button
-                  className="rounded-full  bg-[#147140] hover:from-emerald-700 hover:via-teal-700 hover:to-[#207755]
-    text-white font-normal py-2 sm:py-2.5 md:py-3 px-6 sm:px-8 md:px-10
-    transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]
-    text-xs sm:text-sm md:text-base"
+                  className="rounded-full bg-[#147140] hover:from-emerald-700 hover:via-teal-700 hover:to-[#207755] text-white font-normal py-2 sm:py-2.5 md:py-3 px-6 sm:px-8 md:px-10 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-xs sm:text-sm md:text-base"
                   onClick={handleStartTreatment}
                 >
                   Start Treatment
@@ -776,9 +855,8 @@ useEffect(() => {
             </div>
           </div>
         </div>
-      </section>
-    </div>
-  );
-};
-
+      </section >
+    </div >
+  )
+}
 export default Banner;

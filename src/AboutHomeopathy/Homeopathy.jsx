@@ -110,12 +110,12 @@ const Homeopathy = () => {
 
         {/* HISTORY SECTION */}
         <div className="bg-gray-100 py-10 sm:py-12 lg:py-16 px-5 sm:px-8 lg:px-12">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#207755] text-center mb-4 sm:mb-6">
+          <h2 className="text-[#207755] text-8xl sm:text-6xl lg:text-7xl font-light  hurricane-regular text-center mb-4 sm:mb-6">
             History
           </h2>
 
           <div className="w-full text-center">
-            <p className="text-base sm:text-lg lg:text-xl leading-relaxed text-gray-700">
+            <p className="text-base sm:text-lg lg:text-xl npleading-relaxed text-gray-700">
               Founded in 1790 by German physician Dr. Samuel Hahnemann, homeopathy is
               based on the discovery that a substance causing symptoms in a healthy
               person can, in minute doses, treat similar symptoms in a sick person —
@@ -130,7 +130,7 @@ const Homeopathy = () => {
       <section>
         <div className="w-full px-5 sm:px-8 lg:px-12 xl:px-16 py-10 sm:py-12 lg:py-16">
           <h2 className="ttext-xl sm:text-2xl md:text-3xl font-bold text-center text-[#207755] mb-8 sm:mb-10 lg:mb-12">
-            Core Principles
+            Core <span className='font-normal'>Principles</span>
           </h2>
 
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">

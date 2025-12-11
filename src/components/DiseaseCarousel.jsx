@@ -1,58 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Wifi, WifiOff } from 'lucide-react';
 
 const DiseaseCarousel = () => {
   const [cards, setCards] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('connecting');
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
 
-  const autoScrollTimerRef = useRef(null);
   const wsRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const pollingIntervalRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
-  const containerRef = useRef(null);
+  const autoScrollIntervalRef = useRef(null);
 
   // Configuration
   const API_URL = 'http://localhost:8000/disease-cards';
-  const WS_URL = 'wss://lorinda-remotest-kase.ngrok-free.dev/disease-cards/ws';
+  const WS_URL = 'ws://localhost:8000/disease-cards/ws';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_DELAY = 3000;
   const POLLING_INTERVAL = 5000;
+  const CARDS_PER_PAGE = 4;
+  const AUTO_SCROLL_INTERVAL = 4000;
   
   // Cache Configuration
   const CACHE_KEY = 'disease_cards_cache';
   const CACHE_TIMESTAMP_KEY = 'disease_cards_cache_timestamp';
-  const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
-
-  // Intersection Observer for visibility
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => {
-      if (containerRef.current) {
-        observer.unobserve(containerRef.current);
-      }
-    };
-  }, []);
+  const CACHE_DURATION = 30 * 60 * 1000;
 
   // Fetch initial cards
   useEffect(() => {
-    console.log('🚀 Component mounted, checking cache...');
+    console.log('🚀 Component mounted, fetching cards...');
     fetchCards();
   }, []);
 
@@ -70,36 +45,43 @@ const DiseaseCarousel = () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
       }
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
     };
   }, []);
 
-  // Enable auto-scroll after animation
+  // START AUTO-SCROLL when cards are loaded
   useEffect(() => {
-    if (isVisible && cards.length > 0 && !hasAnimated) {
-      setHasAnimated(true);
-
-      const timer = setTimeout(() => {
-        setIsAutoScrolling(true);
-      }, 2000);
-
-      return () => clearTimeout(timer);
+    console.log('🎬 Cards changed, length:', cards.length);
+    
+    // Clear any existing interval
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = null;
     }
-  }, [isVisible, cards.length, hasAnimated]);
 
-  // Auto-scroll functionality
-  useEffect(() => {
-    if (isAutoScrolling && cards.length > 4) {
-      autoScrollTimerRef.current = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % Math.ceil(cards.length / 4));
-      }, 5000);
+    // Start auto-scroll if we have cards
+    if (cards.length > 0) {
+      console.log('✅ Starting AUTO-SCROLL with', cards.length, 'cards');
+      
+      autoScrollIntervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => {
+          const next = (prev + 1) % cards.length;
+          console.log('🔄 AUTO-SCROLL: Moving from', prev, 'to', next);
+          return next;
+        });
+      }, AUTO_SCROLL_INTERVAL);
     }
 
     return () => {
-      if (autoScrollTimerRef.current) {
-        clearInterval(autoScrollTimerRef.current);
+      if (autoScrollIntervalRef.current) {
+        console.log('🛑 Cleaning up auto-scroll');
+        clearInterval(autoScrollIntervalRef.current);
+        autoScrollIntervalRef.current = null;
       }
     };
-  }, [isAutoScrolling, cards.length]);
+  }, [cards.length]);
 
   const connectWebSocket = () => {
     if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
@@ -132,7 +114,7 @@ const DiseaseCarousel = () => {
 
           if (['update', 'create', 'delete', 'connected'].includes(data.type)) {
             console.log(`🔄 Refreshing cards due to: ${data.type}`);
-            fetchCards(true); // Force refresh from server
+            fetchCards(true);
           }
         } catch (error) {
           console.error('❌ Error parsing WebSocket message:', error);
@@ -185,7 +167,6 @@ const DiseaseCarousel = () => {
 
   const fetchCards = async (forceRefresh = false) => {
     try {
-      // 🔹 1. Check Cache (unless force refresh)
       if (!forceRefresh) {
         const cachedData = localStorage.getItem(CACHE_KEY);
         const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
@@ -222,7 +203,6 @@ const DiseaseCarousel = () => {
 
       const data = await response.json();
       console.log('📦 Raw data received:', data);
-      console.log('📦 Is array:', Array.isArray(data), 'Length:', data?.length);
 
       if (!Array.isArray(data)) {
         console.error('❌ Data is not an array:', data);
@@ -231,7 +211,6 @@ const DiseaseCarousel = () => {
 
       const sortedData = data.sort((a, b) => a.position - b.position);
 
-      // 🔹 2. Cache the fresh data
       localStorage.setItem(CACHE_KEY, JSON.stringify(sortedData));
       localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
       console.log('💾 Cached fresh disease card data');
@@ -245,7 +224,6 @@ const DiseaseCarousel = () => {
     } catch (error) {
       console.error('❌ Error fetching disease cards:', error);
 
-      // 🔹 3. Fallback to stale cache on error
       const cachedData = localStorage.getItem(CACHE_KEY);
       if (cachedData) {
         console.log('📦 Using stale cache as fallback');
@@ -259,38 +237,29 @@ const DiseaseCarousel = () => {
     }
   };
 
-  const handlePrevious = () => {
-    setIsAutoScrolling(false);
-    setCurrentIndex((prev) => (prev - 1 + Math.ceil(cards.length / 4)) % Math.ceil(cards.length / 4));
-  };
-
-  const handleNext = () => {
-    setIsAutoScrolling(false);
-    setCurrentIndex((prev) => (prev + 1) % Math.ceil(cards.length / 4));
-  };
-
-  const goToSlide = (index) => {
-    setIsAutoScrolling(false);
-    setCurrentIndex(index);
-  };
-
   const getImageSrc = (imageData) => {
     if (!imageData) return null;
     return `data:image/jpeg;base64,${imageData}`;
   };
 
   const getDisplayCards = () => {
-    const startIdx = currentIndex * 4;
-    const displayCards = cards.slice(startIdx, startIdx + 4);
-    console.log(`📋 Displaying cards ${startIdx} to ${startIdx + 4}, count: ${displayCards.length}`);
+    if (cards.length === 0) return [];
+    
+    const displayCards = [];
+    for (let i = 0; i < CARDS_PER_PAGE; i++) {
+      const index = (currentIndex + i) % cards.length;
+      displayCards.push({
+        ...cards[index],
+        displayIndex: i
+      });
+    }
+    
     return displayCards;
   };
 
-  const totalPages = Math.ceil(cards.length / 4);
-
   if (cards.length === 0) {
     return (
-      <div className="w-full py-12 bg-linear-to-br from-emerald-50 to-teal-50">
+      <div className="w-full py-12 bg-gradient-to-br from-emerald-50 to-teal-50">
         <div className="mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-[#147140] mb-3">
             Effective Homeopathic Solutions
@@ -301,7 +270,6 @@ const DiseaseCarousel = () => {
           </div>
           <div className="mt-3 text-center">
             <p className="text-sm text-gray-500">Connection: {connectionStatus}</p>
-            <p className="text-xs text-gray-400 mt-2">Check console for detailed logs</p>
           </div>
         </div>
       </div>
@@ -312,7 +280,6 @@ const DiseaseCarousel = () => {
 
   return (
     <div
-      ref={containerRef}
       className="py-8 sm:py-12 md:py-16 relative overflow-hidden bg-cover bg-center"
       style={{ backgroundImage: "url('/bg2.jpg')" }}
     >
@@ -330,15 +297,16 @@ const DiseaseCarousel = () => {
 
         <div className="relative w-full">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full">
-            {displayCards.map((card, index) => {
-              const delay = index * 150;
-              const isFromLeft = index % 2 === 0;
+            {displayCards.map((card) => {
+              const delay = card.displayIndex * 100;
+              
               return (
                 <div
-                  key={`${card.id}-${currentIndex}-${index}`}
-                  className="bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl overflow-hidden transform hover:scale-105 transition-all duration-300 w-full"
+                  key={`${card.id}-${currentIndex}-${card.displayIndex}`}
+                  className="bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl overflow-hidden transform hover:scale-105 w-full"
                   style={{
-                    animation: isVisible && hasAnimated ? 'none' : `slideIn${isFromLeft ? 'Left' : 'Right'} 0.6s ease-out ${delay}ms both`,
+                    animation: `smoothSlideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}ms both`,
+                    transition: 'all 0.3s ease-in-out'
                   }}
                 >
                   <div className="bg-[#147140] p-3 sm:p-4 text-white">
@@ -372,26 +340,35 @@ const DiseaseCarousel = () => {
             })}
           </div>
         </div>
+
+        {/* Auto-scroll indicator */}
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <div className="flex gap-1.5">
+            {cards.map((_, index) => (
+              <div
+                key={index}
+                className={`transition-all duration-500 rounded-full ${
+                  currentIndex === index 
+                    ? 'bg-[#147140] w-8 h-2.5' 
+                    : 'bg-emerald-300 w-2.5 h-2.5'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <style>{`
-        @keyframes slideInLeft {
-          from {
+        @keyframes smoothSlideIn {
+          0% {
             opacity: 0;
-            transform: translateX(-100px) scale(0.9);
+            transform: translateX(30px) scale(0.95);
           }
-          to {
+          60% {
             opacity: 1;
-            transform: translateX(0) scale(1);
+            transform: translateX(-5px) scale(1.02);
           }
-        }
-
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(100px) scale(0.9);
-          }
-          to {
+          100% {
             opacity: 1;
             transform: translateX(0) scale(1);
           }

@@ -1,6 +1,7 @@
 import React from 'react'
-import Plans from './pages/Plans'
+
 import Layout from '../Layout/Layout'
+import Plans from './Pages/Plans'
 
 const ServicePlan = () => {
   return (

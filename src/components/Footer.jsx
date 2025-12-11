@@ -57,7 +57,7 @@ export default function Footer() {
                 163 Tenace Ave<br />
                 LU, Canada<br />
                 <br />
-                usa@homeoconsult.com
+                usa@HomeoConsult.com
               </p>
               <p className="text-[10px] font-semibold mt-2">+1 647-440-3875</p>
             </div>
@@ -113,7 +113,7 @@ export default function Footer() {
           <div className="col-span-1">
             <h3 className="font-bold text-base mb-3">Bandra</h3>
             <p className="text-sm text-green-100 mb-3">
-              HomeOconsult R&D <br />
+              HomeoConsult R&D <br />
               (Opp Dr Vaidyaraj) <br />
               Jain Chambers, SV Road, <br />
               Bandra (W), Mumbai 400050
@@ -126,7 +126,7 @@ export default function Footer() {
           <div className="col-span-1">
             <h3 className="font-bold text-base mb-3">Malad</h3>
             <p className="text-sm text-green-100 mb-3">
-              HomeOconsult R&D <br />
+              HomeoConsult R&D <br />
               SV Road, Malad (W), <br />
               Mumbai - 400064
             </p>
@@ -141,9 +141,9 @@ export default function Footer() {
               163 Tenace Ave, <br />
               LU, Canada
             </p>
-            <p className="text-sm text-green-100">usa@homeoconsult.com</p>
+            <p className="text-sm text-green-100">usa@HomeoConsult.com</p>
             <p className="text-sm text-green-100">+1 647-440-3875</p>
-            <p className="text-sm text-green-100">ask@homeoconsult.com</p>
+            <p className="text-sm text-green-100">ask@HomeoConsult.com</p>
             <p className="text-sm text-green-100">+91 9820190203</p>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function Footer() {
       <div className="bg-[#1c6a4c] py-3 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           <div className="flex flex-col items-center text-center gap-2 text-[11px] text-green-100 sm:hidden">
-            <p>© 2025 HomeOconsult R&D. All rights reserved.</p>
+            <p>© 2025 HomeoConsult R&D. All rights reserved.</p>
             <div className="flex gap-4">
               <li><NavLink to="/disclaimer">Disclaimer</NavLink></li>
               <a href="#" className="hover:text-white transition">Privacy Policy</a>
@@ -166,7 +166,7 @@ export default function Footer() {
               <a href="#" className="hover:text-white transition">Privacy Policy</a>
               <a href="#" className="hover:text-white transition">Cookies Policy</a>
             </div>
-            <p>© 2025 HomeOconsult R&D. All rights reserved.</p>
+            <p>© 2025 HomeoConsult R&D. All rights reserved.</p>
           </div>
 
         </div>
